@@ -38,8 +38,10 @@ if os.path.isfile(path):
             messages = json.load(f)
     except TypeError as e:
         messagebox.showerror("Error",f"I couldn't read ”language.json” file.\nDid you change out the contents of ”language.json” file?\nTypeError : {e}")
+        exit_py()
 else:
     messagebox.showerror("Error","I couldn't find ”language.json” file.\nYou have to install ”language.json” file in ”Appdata” folder.")
+    exit_py()
 
 def change_Japanese():
     global language
@@ -130,10 +132,10 @@ if os.path.isfile(p.resolve()):
         dire = data[1]
         setting = data[2]
     except TypeError as e:
-        messagebox.showerror("エラー",f"data.jsonファイルの読み込みに失敗しました。\nランチャーの再ダウンロードをするか、Appdata\\data.jsonの中身を元に戻してください。\nTypeError : {e}")
+        messagebox.showerror("Error",f"I couldn't read ”data.json” file.\nDid you change out the contents of ”data.json” file?\nTypeError : {e}")
         exit_py()
 else:
-    messagebox.showerror("エラー","data.jsonファイルが同じフォルダの中に見つかりません。\n必ず、同じフォルダに配置してください。\nこれより、アプリケーションを終了致します。")
+    messagebox.showerror("Error","I couldn't find ”data.json” file.\nYou have to install ”data.json” file in ”Appdata” folder.")
     exit_py()
 
 def data_json_update(message):
