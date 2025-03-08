@@ -28,6 +28,8 @@ setting = []
 def exit_py():
     app = False
     sys.exit()
+global languages
+languages = []
 
 #language.jsonの読み込み（韓国語を直接プログラムに入れない。）
 path = Path("Appdata\\language.json")
@@ -43,22 +45,22 @@ else:
     messagebox.showerror("Error","I couldn't find ”language.json” file.\nYou have to install ”language.json” file in ”Appdata” folder.")
     exit_py()
 
-def change_Japanese():
-    global language
-    language = "Japanese"
-    setting[1] = "Japanese"
-    data_json_update("Complete change language\nApplication will be restarted.")
-def change_English():
-    global language
-    language = "English"
-    setting[1] = "English"
-    data_json_update("Complete change language\nApplication will be restarted.")
+for i in list(messages):
+    languages.append(i)
+    print("言語パック”" + i + "”を認識")
 
-def change_Korean():
-    global language
-    language = "Korean"
-    setting[1] = "Korean"
-    data_json_update("Complete change language\nApplication will be restarted.")
+class Gengo():
+    def setlang(self,lang):
+        self.lang2 = lang
+    def change(self):
+        global language
+        language = self.lang2
+        setting[1] = language
+        data_json_update("Complete change language\nApplication will be restarted.")
+    
+    def addCommand(self):
+        hyouji_me = messages[self.lang2][1]
+        menu_language.add_command(label=hyouji_me,command=Gengo.change)
 
 def open_sorce():
     webbrowser.open("https://github.com/gottsudayo/TouhouGameLauncher-Python-")
@@ -69,45 +71,49 @@ def open_wiki():
 def open_otoiawase():
     webbrowser.open("https://github.com/gottsudayo/TouhouGameLauncher-Python-/wiki/%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B")
 
+language_ob = []
 def launcher_widget():
     global launcher
     global gamelist
+    global menu_language
     launcher = Tk()
-    launcher.title(messages[language][1])
+    launcher.title(messages[language][0][1])
     launcher.geometry("500x410")
     launcher.iconbitmap(default="icon.ico")
-    launcherLabel = ttk.Label(launcher,text=messages[language][2],font=30)
+    launcherLabel = ttk.Label(launcher,text=messages[language][0][2],font=30)
     
     #存在するゲームの候補を出すListBox
     gamelist_var = StringVar(launcher,value=game_list)
     gamelist = Listbox(launcher,width=490,font=20,height=15,listvariable=gamelist_var)
     gamelist_var.set(game_list)
     
-    game_exe = Button(launcher,text=messages[language][38],command=launch_game,font=20)
-    custom_exe = Button(launcher,text=messages[language][39],command=launch_custom,font=20)
-    list_update = Button(launcher,text=messages[language][40],command=reload,font=20)
+    game_exe = Button(launcher,text=messages[language][0][38],command=launch_game,font=20)
+    custom_exe = Button(launcher,text=messages[language][0][39],command=launch_custom,font=20)
+    list_update = Button(launcher,text=messages[language][0][40],command=reload,font=20)
     menubar = Menu(launcher)
     launcher.config(menu=menubar)
     
     menu_file = Menu(menubar,tearoff=0)
-    menu_file.add_command(label=messages[language][27],command=settings)
+    menu_file.add_command(label=messages[language][0][27],command=settings)
     menu_file.add_separator()
-    menu_file.add_command(label=messages[language][41],command=exit_py)
-    menubar.add_cascade(label=messages[language][47],menu=menu_file)
+    menu_file.add_command(label=messages[language][0][41],command=exit_py)
+    menubar.add_cascade(label=messages[language][0][47],menu=menu_file)
     
     menu_language = Menu(menubar,tearoff=0)
-    menu_language.add_command(label="日本語",command=change_Japanese)
-    menu_language.add_command(label="English",command=change_English)
-    menu_language.add_command(label="한국어",command=change_Korean)
+    for i in range(len(languages)):
+        language_ob.append(Gengo())
+    for i in language_ob:
+        i.setlang(languages[language_ob.index(i)])
+        i.addCommand()
     menubar.add_cascade(label="languages",menu=menu_language)
     
     menu_help = Menu(menubar,tearoff=0)
-    menu_help.add_command(label=messages[language][42],command=app_info)
+    menu_help.add_command(label=messages[language][0][42],command=app_info)
     menu_help.add_separator()
-    menu_help.add_command(label=messages[language][43],command=open_sorce)
-    menu_help.add_command(label=messages[language][44],command=open_wiki)
-    menu_help.add_command(label=messages[language][45],command=open_otoiawase)
-    menubar.add_cascade(label=messages[language][46],menu=menu_help)
+    menu_help.add_command(label=messages[language][0][43],command=open_sorce)
+    menu_help.add_command(label=messages[language][0][44],command=open_wiki)
+    menu_help.add_command(label=messages[language][0][45],command=open_otoiawase)
+    menubar.add_cascade(label=messages[language][0][46],menu=menu_help)
     
     launcherLabel.pack()
     gamelist.pack()
@@ -146,9 +152,9 @@ def data_json_update(message):
     with open("Appdata\\data.json","w") as f:
         json.dump(data,f)
     if message == "":
-        messagebox.showinfo(messages[language][6],messages[language][7])
+        messagebox.showinfo(messages[language][0][6],messages[language][0][7])
     elif message != None:
-        messagebox.showinfo(messages[language][6],message)
+        messagebox.showinfo(messages[language][0][6],message)
     reload()
 
 #direのディレクトリが存在していればスルー、1つでも存在していないものがあれば自動的にリロードするため、dataのdireを初期化。
@@ -224,10 +230,10 @@ def file_load():
     
     #ディレクトリ検索用のウィンドウを生成する。
     kensaku = Tk()
-    kensaku.title(messages[language][1])
+    kensaku.title(messages[language][0][1])
     kensaku.geometry("300x100")
     kensaku.iconbitmap(default="icon.ico")
-    kensakuchu = ttk.Label(kensaku,text=messages[language][0],font=30)
+    kensakuchu = ttk.Label(kensaku,text=messages[language][0][0],font=30)
     kensakuchu.pack()
     kensaku.update()
     kensaku.lift()
@@ -333,7 +339,13 @@ def load():
     game_list = []
     for item in item_game_list:
         launch_list.append(item)
-        game_list.append(games[language][item])
+        try:
+            game_list.append(games[language][item])
+        except KeyError:
+            game_list.append(games["English"][item])
+            print("エラー：ゲーム言語パック”" + language + "”が見つからない為、英語を適用")
+        else:
+            print("ゲーム言語パック”" + language + "”の" + item + "つ目の項目を正常に認識")
     
     result_search_index_games = []
     result_search_index_custom = []
@@ -518,7 +530,7 @@ def launch_game():
             global launch_game2
             launch_game2 = Tk()
             launch_game2.geometry("550x200")
-            launch_game2.title(messages[language][1])
+            launch_game2.title(messages[language][0][1])
             launch_game2.iconbitmap(default="icon.ico")
             
             open_list = []
@@ -590,8 +602,8 @@ def launch_game():
                     subprocess.run(result2,shell=True,cwd=result)
                     exit_py()
                 except TypeError as e:
-                    error = messages[language][9] + e
-                    messagebox.showerror(messages[language][8],error)
+                    error = messages[language][0][9] + e
+                    messagebox.showerror(messages[language][0][8],error)
             
             def open_game_cancel():
                 launch_game2.destroy()
@@ -605,9 +617,9 @@ def launch_game():
                     result = result_search_index_games[selected_game][open_games]
                     rename_window = Tk()
                     rename_window.geometry("500x100")
-                    rename_window.title(messages[language][1])
+                    rename_window.title(messages[language][0][1])
                     rename_window.iconbitmap(default="icon.ico")
-                    rename_label = Label(rename_window,text=messages[language][10],font=30)
+                    rename_label = Label(rename_window,text=messages[language][0][10],font=30)
                     rename_label2 = Label(rename_window,text=result)
                     rename_entry = Entry(rename_window,width=490)
                     if result_search_index_games[selected_game][open_games] in file_names:
@@ -621,14 +633,14 @@ def launch_game():
                             renames = False
                             rename_window.destroy()
                         elif "\\" in rename_e:
-                            messagebox.showerror(messages[language][8],messages[language][11])
+                            messagebox.showerror(messages[language][0][8],messages[language][0][11])
                         elif len(rename_e) == 0:
-                            messagebox.showerror(messages[language][8],messages[language][12])
+                            messagebox.showerror(messages[language][0][8],messages[language][0][12])
                     
                     def rename_r():
                         hyouji = open_list_h[open_games]
-                        msg = messages[language][14] + hyouji
-                        question = messagebox.askquestion(messages[language][13],msg)
+                        msg = messages[language][0][14] + hyouji
+                        question = messagebox.askquestion(messages[language][0][13],msg)
                         if question == 'yes':
                             file_names.pop(result_search_index_games[selected_game][open_games])
                             data_json_update("")
@@ -637,9 +649,9 @@ def launch_game():
                         renames = False
                         rename_window.destroy()
                     
-                    rename_setting = Button(rename_window,text=messages[language][16],font=30,command=rename_s)
-                    rename_reset = Button(rename_window,text=messages[language][17],font=30,command=rename_r)
-                    rename_cancel = Button(rename_window,text=messages[language][18],font=30,command=rename_c)
+                    rename_setting = Button(rename_window,text=messages[language][0][16],font=30,command=rename_s)
+                    rename_reset = Button(rename_window,text=messages[language][0][17],font=30,command=rename_r)
+                    rename_cancel = Button(rename_window,text=messages[language][0][18],font=30,command=rename_c)
                     
                     rename_label.pack()
                     rename_label2.pack()
@@ -650,10 +662,10 @@ def launch_game():
                     rename_window.update()
                     launch_game2.update()
                 except IndexError as e:
-                    error = messages[language][9] + e
-                    messagebox.showerror(messages[language][8],error)
+                    error = messages[language][0][9] + e
+                    messagebox.showerror(messages[language][0][8],error)
             
-            launch_game2_label = ttk.Label(launch_game2,text=messages[language][19],font=30)
+            launch_game2_label = ttk.Label(launch_game2,text=messages[language][0][19],font=30)
             launch_game2_list = Listbox(launch_game2,width=490,font=20,height=5)
             for i in range(len(result_search_index_games[selected_game])):
                 if result_search_index_games[selected_game][i] in file_names:
@@ -663,9 +675,9 @@ def launch_game():
                     launch_game2_list.insert(END,result_search_index_games[selected_game][i])
                     open_list_h.append(result_search_index_games[selected_game][i])
                 open_list.append(i)
-            launch_game2_open = Button(launch_game2,text=messages[language][20],font=30,command=open_game)
-            launch_game2_rename = Button(launch_game2,text=messages[language][21],font=30,command=rename)
-            launch_game2_cancel = Button(launch_game2,text=messages[language][18],font=30,command=open_game_cancel)
+            launch_game2_open = Button(launch_game2,text=messages[language][0][20],font=30,command=open_game)
+            launch_game2_rename = Button(launch_game2,text=messages[language][0][21],font=30,command=rename)
+            launch_game2_cancel = Button(launch_game2,text=messages[language][0][18],font=30,command=open_game_cancel)
             launch_game2_label.pack()
             launch_game2_list.pack()
             launch_game2_open.pack(side=LEFT)
@@ -734,13 +746,13 @@ def launch_game():
             subprocess.run(result2,shell=True,cwd=result)
             exit_py()
         elif len(result_search_index_games[selected_game]) == 0:
-            error = messages[language][22]
+            error = messages[language][0][22]
             for i in setting[0]:
                 error = error + i + ",\n"
-            messagebox.showerror(messages[language][8],error)
+            messagebox.showerror(messages[language][0][8],error)
     except TypeError as e:
-        error = messages[language][9] + e
-        messagebox.showerror(messages[language][8],error)
+        error = messages[language][0][9] + e
+        messagebox.showerror(messages[language][0][8],error)
 
 def launch_custom():
     try:
@@ -750,7 +762,7 @@ def launch_custom():
             global launch_custom2
             launch_custom2 = Tk()
             launch_custom2.geometry("550x200")
-            launch_custom2.title(messages[language][1])
+            launch_custom2.title(messages[language][0][1])
             launch_custom2.iconbitmap(default="icon.ico")
             open_list = []
             open_list_h = []
@@ -769,16 +781,16 @@ def launch_custom():
                         print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
                         subprocess.run(result2,shell=True,cwd=result)
                     else:
-                        error = messages[language][23] + result
-                        messagebox.showerror(messages[language][8],error)
+                        error = messages[language][0][23] + result
+                        messagebox.showerror(messages[language][0][8],error)
                 except IndexError as e:
-                    error = messages[language][9] + e
-                    messagebox.showerror(messages[language][8],error)
+                    error = messages[language][0][9] + e
+                    messagebox.showerror(messages[language][0][8],error)
             
             def open_custom_cancel():
                 launch_custom2.destroy()
             
-            launch_custom2_label = ttk.Label(launch_custom2,text=messages[language][24],font=30)
+            launch_custom2_label = ttk.Label(launch_custom2,text=messages[language][0][24],font=30)
             launch_custom2_list = Listbox(launch_custom2,width=490,font=20,height=5)
             for i in range(len(result_search_index_games[selected_game])):
                 if result_search_index_games[selected_game][i] in file_names:
@@ -788,8 +800,8 @@ def launch_custom():
                     launch_custom2_list.insert(END,result_search_index_games[selected_game][i])
                     open_list_h.append(result_search_index_games[selected_game][i])
                 open_list.append(i)
-            launch_custom2_open = Button(launch_custom2,text=messages[language][25],font=30,command=open_custom)
-            launch_custom2_cancel = Button(launch_custom2,text=messages[language][18],font=30,command=open_custom_cancel)
+            launch_custom2_open = Button(launch_custom2,text=messages[language][0][25],font=30,command=open_custom)
+            launch_custom2_cancel = Button(launch_custom2,text=messages[language][0][18],font=30,command=open_custom_cancel)
             launch_custom2_label.pack()
             launch_custom2_list.pack()
             launch_custom2_open.pack(side=LEFT)
@@ -803,27 +815,27 @@ def launch_custom():
                 print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
                 subprocess.run(result2,shell=True,cwd=result)
             else:
-                error = messages[language][23] + result
-                messagebox.showerror(messages[language][8],error)
+                error = messages[language][0][23] + result
+                messagebox.showerror(messages[language][0][8],error)
         elif len(result_search_index_custom[selected_game]) == 0:
-            error = messages[language][26]
+            error = messages[language][0][26]
             for i in setting[0]:
                 error = error + i + ",\n"
-            messagebox.showerror(messages[language][8],error)
+            messagebox.showerror(messages[language][0][8],error)
     except TypeError as e:
-        error = messages[language][9] + e
-        messagebox.showerror(messages[language][8],error)
+        error = messages[language][0][9] + e
+        messagebox.showerror(messages[language][0][8],error)
         
 def settings():
     setting_window = Tk()
     setting_window.geometry("400x400")
-    setting_window.title(messages[language][27])
+    setting_window.title(messages[language][0][27])
     setting_window.iconbitmap("icon.ico")
     
     def set0_w():
         set0_window = Tk()
         set0_window.geometry("400x400")
-        set0_window.title(messages[language][28])
+        set0_window.title(messages[language][0][28])
         set0_window.iconbitmap("icon.ico")
         
         global search_dire_k
@@ -836,7 +848,7 @@ def settings():
         dire_list_var.set(search_dire_k)
         
         def folder_add():
-            folder = filedialog.askdirectory(title=messages[language][29],initialdir="PC")
+            folder = filedialog.askdirectory(title=messages[language][0][29],initialdir="PC")
             if folder != "":
                 search_dire_k.append(folder)
                 dire_list_var.set(search_dire_k)
@@ -846,17 +858,17 @@ def settings():
                 search_dire_k.remove(selected_folder)
                 dire_list_var.set(search_dire_k)
             except IndexError as e:
-                error = messages[language][30] + e
-                messagebox.showerror(messages[language][8],error)
+                error = messages[language][0][30] + e
+                messagebox.showerror(messages[language][0][8],error)
             except TypeError as e:
-                error = messages[language][30] + e
-                messagebox.showerror(messages[language][8],error)
+                error = messages[language][0][30] + e
+                messagebox.showerror(messages[language][0][8],error)
         def close_set0():
             set0_window.destroy()
         
-        set0_add = Button(set0_window,text=messages[language][31],font=30,command=folder_add)
-        set0_delete = Button(set0_window,text=messages[language][32],font=30,command=folder_delete)
-        set0_close = Button(set0_window,text=messages[language][33],font=30,command=close_set0)
+        set0_add = Button(set0_window,text=messages[language][0][31],font=30,command=folder_add)
+        set0_delete = Button(set0_window,text=messages[language][0][32],font=30,command=folder_delete)
+        set0_close = Button(set0_window,text=messages[language][0][33],font=30,command=close_set0)
         
         dire_list.pack()
         set0_add.pack(side=LEFT)
@@ -868,14 +880,14 @@ def settings():
     def save_setting():
         setting[0] = search_dire_k
         setting_window.destroy()
-        data_json_update(messages[language][34])
+        data_json_update(messages[language][0][34])
     
     def cancel_setting():
         setting_window.destroy()
     
-    set0_button = Button(setting_window,text=messages[language][35],font=30,command=set0_w)
-    setting_save = Button(setting_window,text=messages[language][36],font=30,command=save_setting)
-    setting_cancel = Button(setting_window,text=messages[language][18],font=30,command=cancel_setting)
+    set0_button = Button(setting_window,text=messages[language][0][35],font=30,command=set0_w)
+    setting_save = Button(setting_window,text=messages[language][0][36],font=30,command=save_setting)
+    setting_cancel = Button(setting_window,text=messages[language][0][18],font=30,command=cancel_setting)
     
     set0_button.pack(side=LEFT)
     setting_cancel.pack(side=RIGHT,anchor=S)
@@ -887,9 +899,9 @@ def app_info():
     info_window = Tk()
     info_window.geometry("500x300")
     info_window.iconbitmap("icon.ico")
-    info_window.title(messages[language][1])
+    info_window.title(messages[language][0][1])
     
-    info_title = Label(info_window,text=messages[language][37],font=50)
+    info_title = Label(info_window,text=messages[language][0][37],font=50)
     info_version = Label(info_window,text="ver1.3.0\nProgramed by Gottsudayo",font=20)
     
     def close_info():

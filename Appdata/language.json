@@ -1,4 +1,4 @@
-{"Japanese":[
+{"Japanese":[[
     "ディレクトリ検索中",
     "東方原作ランチャー ver.2.0.2",
     "ゲームを選択してください。",
@@ -47,8 +47,8 @@
     "お問い合わせ",
     "ヘルプ",
     "ファイル"
-    ],
-            "English":[
+    ],"日本語"],
+            "English":[[
                 "Searching Directory...",
                 "Touhou Game Launcher ver2.0.2",
                 "Please select a game.",
@@ -113,9 +113,9 @@
                 "",
                 "",
                 ""
-            ],
+            ],"English"],
         "Korean":
-    [
+    [[
         "디렉토리 검색 중...",
         "Touhou Game Launcher ver2.0.2",
         "게임을 선택하세요.",
@@ -164,4 +164,4 @@
         "문의처",
         "도움말",
         "파일"
-    ]}
+    ],"한국어"]}
