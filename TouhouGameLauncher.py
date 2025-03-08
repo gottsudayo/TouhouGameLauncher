@@ -37,13 +37,16 @@ path = path.resolve()
 if os.path.isfile(path):
     try:
         with open(path,"r",encoding="utf-8") as f:
-            messages = json.load(f)
+            language_j = json.load(f)
     except TypeError as e:
         messagebox.showerror("Error",f"I couldn't read ”language.json” file.\nDid you change out the contents of ”language.json” file?\nTypeError : {e}")
         exit_py()
 else:
     messagebox.showerror("Error","I couldn't find ”language.json” file.\nYou have to install ”language.json” file in ”Appdata” folder.")
     exit_py()
+
+messages = language_j[0]
+games = language_j[1]
 
 for i in list(messages):
     languages.append(i)
@@ -407,98 +410,6 @@ def reload():
     launcher_widget()
 
 
-#「ゲーム実行ファイル名：東方のゲーム名等」でまとめてあるリスト
-#新しいゲームが出たらここを変更する
-games = {"Japanese":
-    {"th06.exe":["東方紅魔郷　とうほうこうまきょう","2002"],
-        "th07.exe":["東方妖々夢　とうほうようようむ","2003"],
-        "th075.exe":["東方萃夢想　とうほうすいむそう","2004"],
-        "th08.exe":["東方永夜抄　とうほうえいやしょう","2004"],
-        "th09.exe":["東方花映塚　とうほうかえいづか","2005"],
-        "th095.exe":["東方文花帖　とうほうぶんかちょう","2005"],
-        "th10.exe":["東方風神録　とうほうふうじんろく","2007"],
-        "th105.exe":["東方緋想天　とうほうひそうてん","2008"],
-        "th11.exe":["東方地霊殿　とうほうちれいでん","2008"],
-        "th12.exe":["東方星蓮船　とうほうせいれんせん","2009"],
-        "th123.exe":["東方非想天則　とうほうひそうてんそく","2009"],
-        "th125.exe":["ダブルスポイラー～東方文花帖　だぶるすぽいらー～とうほうぶんかちょう","2010"],
-        "th128.exe":["妖精大戦争～東方三月精　ようせいだいせんそう～とうほうさんげつせい","2010"],
-        "th13.exe":["東方神霊廟　とうほうしんれいびょう","2011"],
-        "th135.exe":["東方心綺楼　とうほうしんきろう","2013"],
-        "th14.exe":["東方輝針城　とうほうきしんじょう","2013"],
-        "th143.exe":["弾幕アマノジャク　だんまくあまのじゃく","2014"],
-        "th145.exe":["東方深秘録　とうほうしんぴろく","2015"],
-        "th15.exe":["東方紺珠伝　とうほうかんじゅでん","2015"],
-        "th155.exe":["東方憑依華　とうほうひょういばな","2017"],
-        "th16.exe":["東方天空章　とうほうてんくうしょう","2017"],
-        "th165.exe":["秘封ナイトメアダイアリー　ひふうないとめあだいありー","2018"],
-        "th17.exe":["東方鬼形獣　とうほうきけいじゅう","2019"],
-        "th175.exe":["東方剛欲異聞　とうほうごうよくいぶん","2021"],
-        "th18.exe":["東方虹龍洞　とうほうこうりゅうどう","2021"],
-        "th185.exe":["バレットフィリア達の闇市場　ばれっとふぃりあたちのやみいちば","2022"],
-        "th19.exe":["東方獣王園　とうほうじゅうおうえん","2023"]
-        },
-        "English":
-            {
-                "th06.exe":["Touhou Koumakyo","2002"],
-                "th07.exe":["Touhou Youyoumu","2003"],
-                "th075.exe":["Touhou Suimusou","2004"],
-                "th08.exe":["Touhou Eiyasho","2004"],
-                "th09.exe":["Touhou Kaeizuka","2005"],
-                "th095.exe":["Touhou Bunkacho","2005"],
-                "th10.exe":["Touhou Fujinroku","2007"],
-                "th105.exe":["Touhou Hisouten","2008"],
-                "th11.exe":["Touhou Chireiden","2008"],
-                "th12.exe":["Touhou Seirensen","2009"],
-                "th123.exe":["Touhou Hisoutensoku","2009"],
-                "th125.exe":["Double Spoiler ~ Touhou Bunkacho","2010"],
-                "th128.exe":["Yousei Daisensou ~ Touhou Sangetsusei","2010"],
-                "th13.exe":["Touhou Shinreibyo","2011"],
-                "th135.exe":["Touhou Shinkiro","2013"],
-                "th14.exe":["Touhou Kishinjo","2013"],
-                "th143.exe":["Danmaku Amanojaku","2014"],
-                "th145.exe":["Touhou Shinpiroku","2015"],
-                "th15.exe":["Touhou Kanjuden","2015"],
-                "th155.exe":["Touhou Hyoibana","2017"],
-                "th16.exe":["Touhou Tenkusho","2017"],
-                "th165.exe":["Hifu Nightmare Diary","2018"],
-                "th17.exe":["Touhou Kikeiju","2019"],
-                "th175.exe":["Touhou Goyokuibun","2021"],
-                "th18.exe":["Touhou Kouryudo","2021"],
-                "th185.exe":["Black Market of Bulletphilia","2022"],
-                "th19.exe":["Touhou Juohen","2023"]
-            },
-            "Korean":
-                {
-                    "th06.exe":["동방 코마쿄","2002"],
-                    "th07.exe":["동방 요요무","2003"],
-                    "th075.exe":["동방 스이무소우","2004"],
-                    "th08.exe":["동방 에이야쇼","2004"],
-                    "th09.exe":["동방 카에이즈카","2005"],
-                    "th095.exe":["동방 문화초","2005"],
-                    "th10.exe":["동방 후지로쿠","2007"],
-                    "th105.exe":["동방 히소텐","2008"],
-                    "th11.exe":["동방 치레이덴","2008"],
-                    "th12.exe":["동방 사이렌센","2009"],
-                    "th123.exe":["동방 히소텐소쿠","2009"],
-                    "th125.exe":["더블 스포일러 ~ 동방 문화초","2010"],
-                    "th128.exe":["요우세이 다이센소우 ~ 동방 산게츠세이","2010"],
-                    "th13.exe":["동방 신레이요","2011"],
-                    "th135.exe":["동방 신키로","2013"],
-                    "th14.exe":["동방 키신조","2013"],
-                    "th143.exe":["단마쿠 아마노자쿠","2014"],
-                    "th145.exe":["동방 신피로쿠","2015"],
-                    "th15.exe":["동방 칸쥬덴","2015"],
-                    "th155.exe":["동방효바나","2017"],
-                    "th16.exe":["동방천공","2017"],
-                    "th165.exe":["히푸 악몽 일기","2018"],
-                    "th17.exe":["동방 키케이주","2019"],
-                    "th175.exe":["동방 코요쿠이분","2021"],
-                    "th18.exe":["동방 고류도","2021"],
-                    "th185.exe":["불렛필리아 블랙 시장","2022"],
-                    "th19.exe":["동방 주오헨","2023"]
-                }
-            }
 
 #新しいゲームが出たらここを変更する
 game_name = ["th06.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe","th10.exe","th105.exe","th11.exe","th12.exe","th123.exe","th125.exe","th128.exe","th13.exe","th135.exe","th14.exe","th143.exe","th145.exe","th15.exe","th155.exe","th16.exe","th165.exe","th17.exe","th18.exe","th185.exe","th19.exe"]
