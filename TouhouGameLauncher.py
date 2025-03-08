@@ -175,6 +175,7 @@ for i in dire:
         print(os.path.exists(i))
         print("ディレクトリ：" + i + "、存在確認")
 
+
 user = getpass.getuser()
 
 if len(setting[0]) == 0:
