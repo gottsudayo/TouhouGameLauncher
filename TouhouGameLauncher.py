@@ -18,44 +18,29 @@ import codecs
 import sys
 from time import sleep
 import webbrowser
-import shutil
 
 #続いていろいろな関数の定義
 global dire
 global setting
 global game_name
-global everyL
 dire = []
 setting = [[],""]
-everyL = {}
 def exit_py():
+    app = False
     sys.exit()
 global languages
 languages = []
 
-def set0_w_w():
-    try:
-        if len(search_dire_k) >= 1:
-            page3_next['state'] = 'normal'
-    except:
-        pass
-
 def setup():
+    def set0_w_w():
+        set0_w()
+        while len(search_dire_k) != 0:
+            page2_next['state'] = 'disabled'
+        page2_next['state'] = 'normal'
+    
     dire = []
     setting = [[],""]
-    data = [{},[],[[],""],{}]
-    
-    def exit_py2():
-        try:
-            ask = messagebox.askyesno("info",messages[language][0][59])
-            if ask == True:
-                app = False
-                sys.exit(0)
-        except NameError:
-            ask = messagebox.askyesno("info",messages["English"][0][59])
-            if ask == True:
-                app = False
-                sys.exit(0)
+    data = [{},[],[[],""]]
     
     def data_json_w():
         setting[1] = language
@@ -70,92 +55,53 @@ def setup():
     setup_w.title("TouhouGameLauncher Setup")
     setup_w.geometry("500x500")
     setup_w.iconbitmap(default="icon.ico")
-    setup_w.protocol('WM_DELETE_WINDOW',exit_py2)
     
     def setup_close():
         setup_w.destroy()
         global app
-        app = False
-        sys.exit()
-    
-    
-    def next3(bPage):
-        if bPage == 2:
-            page2.destroy()
-            page4 = Canvas(setup_w,width=500,height=500)
-            page4.place(x=0,y=0)
-            message1 = Label(page4,text=messages[language][0][51])
-            message1.pack()
-            data = f_kari
+        app = True
+        if len(dire) == 0:
+            file_load()
+            load()
+            kensaku.destroy()
         else:
-            page3.destroy()
-            page4 = Canvas(setup_w,width=500,height=500)
-            page4.place(x=0,y=0)
-            message1 = Label(page4,text=messages[language][0][51])
-            message1.pack()
-            setting[0] = search_dire_k
-            data_json_w()
-        message1['text'] = messages[language][0][52]
-        message1.update()
-        setup_close_b = Button(page4,text=messages[language][0][53],font=30,command=setup_close)
-        setup_close_b.pack(side=BOTTOM)
+            global Ingames
+            Ingames = []
+            for i in dire:
+                Ingames.append(i)
+            load()
+        launcher_widget()
     
-    def next3_2():
-        next3(1)
     
     def next2():
-        global page3
-        global page3_next
-        #（オプション）ページ3：ファイル検索場所を選択
         page2.destroy()
         page3 = Canvas(setup_w,width=500,height=500)
         page3.place(x=0,y=0)
-        message1 = Label(page3,text=messages[language][0][49],font=30)
-        message1.pack()
-        sansho_dire_b = Button(page3,text=messages[language][0][28],font=30,command=set0_w)
-        sansho_dire_b.pack()
-        page3_next = Button(page3,text=messages[language][0][48],font=30,command=next3_2)
-        page3_next['state'] = 'disabled'
-        page3_next.pack(side=BOTTOM)
+        message2 = Label(page3,text=messages[language][0][51])
+        message2.pack()
+        setting[0] = search_dire_k
+        data_json_w()
+        message2['text'] = messages[language][0][52]
+        message2.update()
+        setup_close_b = Button(page3,text=messages[language][0][53],font=30,command=setup_close)
+        setup_close_b.pack(side=BOTTOM)
     
     def next1():
         global page2
+        global page2_next
+        data_json_w()
         print("言語”" + language + "”を選択")
         print(setting)
+        #ページ2：ファイル検索場所を選択
         page1.destroy()
-        #ページ2：data.jsonの取り出し方を選択
         page2 = Canvas(setup_w,width=500,height=500)
         page2.place(x=0,y=0)
-        message1 = Label(page2,text=messages[language][0][55],font=30)
+        message1 = Label(page2,text=messages[language][0][49],font=30)
         message1.pack()
-        newMakeJson = Button(page2,text=messages[language][0][56],font=30,command=next2)
-        def select_data_file():
-            dataFilePath = filedialog.askopenfilename(filetypes=[('JSON sorce','.json')])
-            if dataFilePath != "":
-                dataFilePath = Path(dataFilePath)
-                with open(dataFilePath,"r",encoding="utf-8") as f:
-                    global f_kari
-                    f_kari = json.load(f)
-                print(type(f_kari))
-                if "data.json" in str(dataFilePath):
-                    if type(f_kari) is list:
-                        print(len(f_kari[2]))
-                        if (len(f_kari) == 3) and (len(f_kari[2]) == 2):
-                            if len(f_kari[2][0]) != 0:
-                                copyFile = Path("Appdata\\data.json")
-                                shutil.copyfile(dataFilePath,copyFile)
-                                next3(2)
-                            else:
-                                messagebox.showerror(messages[language][0][8],messages[language][0][61])
-                        else:
-                            messagebox.showerror(messages[language][0][8],messages[language][0][58])
-                    else:
-                        messagebox.showerror(messages[language][0][8],messages[language][0][58])
-                else:
-                    messagebox.showerror(messages[language][0][8],messages[language][0][60])
-        LoadJson = Button(page2,text=messages[language][0][57],font=30,command=select_data_file)
-        newMakeJson.pack(side=LEFT)
-        LoadJson.pack(side=RIGHT)
+        sansho_dire_b = Button(page2,text=messages[language][0][28],font=30,command=set0_w_w)
+        sansho_dire_b.pack()
+        page2_next = Button(page2,text=messages[language][0][48],font=30,command=next2)
+        page2_next.pack(side=BOTTOM)
     
     def sentaku1(event):
         page1_next['state'] = 'normal'
@@ -211,13 +157,12 @@ def set0_w():
             search_dire_k.remove(selected_folder)
             dire_list_var.set(search_dire_k)
         except IndexError as e:
-            error = messages[language][0][30] + str(e)
+            error = messages[language][0][30] + e
             messagebox.showerror(messages[language][0][8],error)
         except TypeError as e:
-            error = messages[language][0][30] + str(e)
+            error = messages[language][0][30] + e
             messagebox.showerror(messages[language][0][8],error)
     def close_set0():
-        set0_w_w()
         set0_window.destroy()
     
     set0_add = Button(set0_window,text=messages[language][0][31],font=30,command=folder_add)
@@ -248,10 +193,6 @@ else:
 messages = language_j[0]
 games = language_j[1]
 
-#language.jsonの審査（アプデ時に変更する）
-if len(messages["Japanese"][0]) != 66:
-    messagebox.showerror("Error","language.json is old version or new version.\nYou must download language.json version 2.2.0 in this directory.")
-
 for i in list(messages):
     languages.append(i)
     print("言語パック”" + i + "”を認識")
@@ -268,29 +209,16 @@ def file_load():
     p = Path('Appdata\\data.json')
     if os.path.isfile(p.resolve()):
         try:
-            global everyL
-            with open("Appdata\\data.json",mode="r",encoding="utf-8") as f:
+            with open('Appdata\\data.json',mode="r",encoding="utf-8") as f:
                 data = json.load(f)
             dire = []
             setting = []
             file_names = data[0]
             dire = data[1]
             setting = data[2]
-            everyL = data[3]
             language = setting[1]
-            if len(data) == 3:
-                data.append({})
-                with open('Appdata\\data.json',mode="w",encoding="utf-8") as f:
-                    json.dump(data,f)
-            else:
-                everyL = data[3]
         except TypeError as e:
             setup()
-        except IndexError:
-            data.append({})
-            with open("Appdata\\data.json","w",encoding="utf-8") as f:
-                json.dump(data,f)
-            everyL = data[3]
     else:
         setup()
     
@@ -304,34 +232,18 @@ def file_load():
     kensaku.geometry("300x100")
     kensaku.iconbitmap(default="icon.ico")
     kensakuchu = ttk.Label(kensaku,text=messages[language][0][0],font=30)
-    process = ttk.Progressbar(kensaku,length=250,mode="determinate",maximum=1)
-    processV = "0/" + str(len(setting[0])) + "\n" + setting[0][0]
-    proLabel = Label(kensaku,text=processV,font=5)
     kensakuchu.pack()
-    process.pack()
-    proLabel.pack()
     kensaku.update()
     kensaku.lift()
     Ingames = []
     kensaku.update()
     
-    for j in range(len(setting[0])):
-        folder = Path(setting[0][j])
-        process.configure(value=(j)/len(setting[0]))
-        processV = str(j) + "/" + str(len(setting[0])) + "\n" + str(folder)
-        proLabel.configure(text=processV)
-        proLabel.update()
-        process.update()
+    for j in setting[0]:
+        folder = Path(j)
         print("ディレクトリ「" + str(folder) + "」を探索中")
         for i in folder.glob("**/th[0-9][0-9].exe"):
             Ingames.append(str(i))
-    process.configure(value=1)
-    processV = str(len(setting[0])) + "/" + str(len(setting[0])) + "\n" + str(setting[0][len(setting[0])-1])
-    proLabel.configure(text=processV)
-    process.update()
-    proLabel.update()
-    
-    kensaku.destroy()
+        
 
 def load():
     #様々な変数のグローバル化2
@@ -343,7 +255,6 @@ def load():
     global Incustom
     global check_game
     global dire
-    global launch_list
     
     Incustom = []
     check_game = [0 for i in range(26)]
@@ -457,7 +368,7 @@ def load():
     for i in Ingames:
         dire.append(i)
     data[1] = dire
-    with open('Appdata\\data.json',"w",encoding="utf-8") as f:
+    with open('Appdata\\data.json',"w") as f:
         json.dump(data,f)
     
 
@@ -470,7 +381,6 @@ def reload():
     p = Path('Appdata\\data.json')
     if os.path.isfile(p.resolve()):
         try:
-            global everyL
             with open('Appdata\\data.json',mode="r",encoding="utf-8") as f:
                 data = json.load(f)
             dire = []
@@ -478,15 +388,9 @@ def reload():
             file_names = data[0]
             dire = data[1]
             setting = data[2]
-            everyL = data[3]
             language = setting[1]
         except TypeError as e:
             setup()
-        except IndexError:
-            data.append({})
-            with open("Appdata\\data.json","w",encoding="utf-8") as f:
-                json.dump(data,f)
-            everyL = data[3]
     else:
         setup()
     
@@ -495,6 +399,7 @@ def reload():
     #インデックス作成
     load()
     #オブジェクト配置
+    kensaku.destroy()
     launcher_widget()
 
 #data.jsonの読み込み
@@ -511,24 +416,15 @@ if os.path.isfile(p.resolve()):
         file_names = data[0]
         dire = data[1]
         setting = data[2]
-        everyL = data[3]
-        print(everyL)
-    except TypeError:
+    except TypeError as e:
         file_names = {}
         dire = []
         setting = []
-        everyL = {}
         setup()
-    except IndexError:
-        data.append({})
-        with open("Appdata\\data.json","w",encoding="utf-8") as f:
-            json.dump(data,f)
-        everyL = data[3]
 else:
     file_names = {}
     dire = []
     setting = []
-    everyL = {}
     setup()
 
 #新しいゲームが出たらここを変更する
@@ -545,25 +441,17 @@ else:
 
 
 def data_json_update(message):
-    try:
-        global everyL
-        data = [{},[],[],{}]
-        data[0] = file_names
-        data[1] = dire
-        data[2] = setting
-        data[3] = everyL
-        with open("Appdata\\data.json","w",encoding="utf-8") as f:
-            json.dump(data,f)
-        if message == "":
-            messagebox.showinfo(messages[language][0][6],messages[language][0][7])
-        elif message != None:
-            messagebox.showinfo(messages[language][0][6],message)
-        reload()
-    except IndexError:
-        data.append({})
-        with open("Appdata\\data.json","w",encoding="utf-8") as f:
-            json.dump(data,f)
-        everyL = data[3]
+    data = [{},[],[]]
+    data[0] = file_names
+    data[1] = dire
+    data[2] = setting
+    with open("Appdata\\data.json","w") as f:
+        json.dump(data,f)
+    if message == "":
+        messagebox.showinfo(messages[language][0][6],messages[language][0][7])
+    elif message != None:
+        messagebox.showinfo(messages[language][0][6],message)
+    reload()
 
 #direのディレクトリが存在していればスルー、1つでも存在していないものがあれば自動的にリロードするため、dataのdireを初期化。
 for i in dire:
@@ -573,7 +461,7 @@ for i in dire:
         print("リストを初期化")
         dire = []
         data[1] = dire
-        with open("Appdata\\data.json","w",encoding="utf-8") as f:
+        with open("Appdata\\data.json","w") as f:
             json.dump(data,f)
         break
     else:
@@ -590,13 +478,13 @@ if len(data[2]) == 2:
         language = "Japanese"
         setting[1] = language
         data[2] = setting
-        with open("Appdata\\data.json","w",encoding="utf-8") as f:
+        with open("Appdata\\data.json","w") as f:
             json.dump(data,f)
 else:
     language = "Japanese"
     setting[1] = language
     data[2] = setting
-    with open("Appdata\\data.json","w",encoding="utf-8") as f:
+    with open("Appdata\\data.json","w") as f:
         json.dump(data,f)
 
 if os.path.isfile(p.resolve()):
@@ -606,23 +494,15 @@ if os.path.isfile(p.resolve()):
         file_names = data[0]
         dire = data[1]
         setting = data[2]
-        everyL = data[3]
     except TypeError as e:
         file_names = {}
         dire = []
         setting = []
-        everyL = {}
         setup()
-    except IndexError:
-        data.append({})
-        with open("Appdata\\data.json","w",encoding="utf-8") as f:
-            json.dump(data,f)
-        everyL = data[3]
 else:
     file_names = {}
     dire = []
     setting = []
-    everyL = {}
     setup()
 
 #ここで読み込み関数実行
@@ -651,41 +531,6 @@ def selected_index():
     selected_game = selected_game2[0]
     
 
-def appendQS(event):
-    try:
-        global everyL
-        selected_game4 = launch_game2_list.curselection()
-        print(launch_list[selected_game])
-        print(result_search_index_games[selected_game][selected_game4[0]])
-        if (launch_list[selected_game],result_search_index_games[selected_game][selected_game4[0]]) in everyL.items():
-            everyL.pop(launch_list[selected_game])
-            data[3] = everyL
-            with open("Appdata\\data.json","w",encoding="utf-8") as f:
-                json.dump(data,f)
-            open_list_h[selected_game4[0]] = open_list_h[selected_game4[0]].replace("[Q]","")
-            messagebox.showinfo(messages[language][0][63],messages[language][0][65])
-        else:
-            print(result_search_index_games[selected_game][selected_game4[0]])
-            print(result_search_index_games)
-            print("クイックスタート：キー「" + launch_list[selected_game] + "」に「" + result_search_index_games[selected_game][selected_game4[0]] + "」を登録")
-            everyL[launch_list[selected_game]] = result_search_index_games[selected_game][selected_game4[0]]
-            data[3] = everyL
-            with open("Appdata\\data.json","w",encoding="utf-8") as f:
-                json.dump(data,f)
-            open_list_h[selected_game4[0]] = "[Q]" + open_list_h[selected_game4[0]]
-            messagebox.showinfo(messages[language][0][63],messages[language][0][64])
-        launch_game2_list_var.set(open_list_h)
-        launch_game2_list.update()
-        launch_game2.lift()
-    except TypeError as e:
-        error = messages[language][0][9] + str(e)
-        messagebox.showerror(messages[language][0][8],error)
-    except IndexError:
-        data.append({})
-        with open("Appdata\\data.json","w",encoding="utf-8") as f:
-            json.dump(data,f)
-        everyL = data[3]
-
 def launch_game():
     #thXX.exeを起動するための処理
     try:
@@ -693,22 +538,17 @@ def launch_game():
         if len(result_search_index_games[selected_game]) >= 2:
             #ファイル候補を出す
             global launch_game2
-            global open_list_h
-            global launch_game2_list
-            global selected_game4
-            global open_list
-            global launch_game2_list_var
             launch_game2 = Tk()
             launch_game2.geometry("550x200")
             launch_game2.title(messages[language][0][1])
             launch_game2.iconbitmap(default="icon.ico")
-            launch_game2.bind("<Button-3>",appendQS)
             
             open_list = []
             open_list_h = []
             
             def open_game():
                 try:
+                    global selected_game4
                     selected_game4 = launch_game2_list.curselection()
                     open_games = open_list[selected_game4[0]]
                     result = result_search_index_games[selected_game][open_games]
@@ -836,23 +676,15 @@ def launch_game():
                     messagebox.showerror(messages[language][0][8],error)
             
             launch_game2_label = ttk.Label(launch_game2,text=messages[language][0][19],font=30)
+            launch_game2_list = Listbox(launch_game2,width=490,font=20,height=5)
             for i in range(len(result_search_index_games[selected_game])):
-                if result_search_index_games[selected_game][i] in everyL.values():
-                    if result_search_index_games[selected_game][i] in file_names:
-                        add = "[Q]" + file_names[result_search_index_games[selected_game][i]]
-                        open_list_h.append(add)
-                    else:
-                        add = "[Q]" + result_search_index_games[selected_game][i]
-                        open_list_h.append(add)
+                if result_search_index_games[selected_game][i] in file_names:
+                    launch_game2_list.insert(END,file_names[result_search_index_games[selected_game][i]])
+                    open_list_h.append(file_names[result_search_index_games[selected_game][i]])
                 else:
-                    if result_search_index_games[selected_game][i] in file_names:
-                        open_list_h.append(file_names[result_search_index_games[selected_game][i]])
-                    else:
-                        open_list_h.append(result_search_index_games[selected_game][i])
+                    launch_game2_list.insert(END,result_search_index_games[selected_game][i])
+                    open_list_h.append(result_search_index_games[selected_game][i])
                 open_list.append(i)
-            launch_game2_list_var = StringVar(launch_game2,value=open_list_h)
-            launch_game2_list = Listbox(launch_game2,width=490,font=20,height=5,listvariable=launch_game2_list_var)
-            launch_game2_list_var.set(open_list_h)
             launch_game2_open = Button(launch_game2,text=messages[language][0][20],font=30,command=open_game)
             launch_game2_rename = Button(launch_game2,text=messages[language][0][21],font=30,command=rename)
             launch_game2_cancel = Button(launch_game2,text=messages[language][0][18],font=30,command=open_game_cancel)
@@ -1012,11 +844,9 @@ def settings():
     setting_window.iconbitmap("icon.ico")
     
     def save_setting():
-        try:
-            setting[0] = search_dire_k
-        finally:
-            setting_window.destroy()
-            data_json_update(messages[language][0][34])
+        setting[0] = search_dire_k
+        setting_window.destroy()
+        data_json_update(messages[language][0][34])
     
     def cancel_setting():
         setting_window.destroy()
@@ -1077,79 +907,6 @@ def open_wiki():
 def open_otoiawase():
     webbrowser.open("https://github.com/gottsudayo/TouhouGameLauncher-Python-/wiki/%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B")
 
-def ButtonClick(event):
-    try:
-        selected_index()
-        if launch_list[selected_game] in everyL:
-            result = everyL[launch_list[selected_game]]
-            result2 = result
-            if os.path.isfile(result):
-                #新しいゲームが出たらここを変更する
-                if ("\\th06.exe" in result) == True:
-                    result = result.replace('\\th06.exe', '')
-                if ("\\th07.exe" in result) == True:
-                    result = result.replace('\\th07.exe', '')
-                if ("\\th075.exe" in result) == True:
-                    result = result.replace('\\th075.exe', '')
-                if ("\\th08.exe" in result) == True:
-                    result = result.replace('\\th08.exe', '')
-                if ("\\th09.exe" in result) == True:
-                    result = result.replace('\\th09.exe', '')
-                if ("\\th095.exe" in result) == True:
-                    result = result.replace('\\th095.exe', '')
-                if ("\\th10.exe" in result) == True:
-                    result = result.replace('\\th10.exe', '')
-                if ("\\th105.exe" in result) == True:
-                    result = result.replace('\\th105.exe', '')
-                if ("\\th11.exe" in result) == True:
-                    result = result.replace('\\th11.exe', '')
-                if ("\\th12.exe" in result) == True:
-                    result = result.replace('\\th12.exe', '')
-                if ("\\th123.exe" in result) == True:
-                    result = result.replace('\\th123.exe', '')
-                if ("\\th125.exe" in result) == True:
-                    result = result.replace('\\th125.exe', '')
-                if ("\\th128.exe" in result) == True:
-                    result = result.replace('\\th128.exe', '')
-                if ("\\th13.exe" in result) == True:
-                    result = result.replace('\\th13.exe', '')
-                if ("\\th135.exe" in result) == True:
-                    result = result.replace('\\th135.exe', '')
-                if ("\\th14.exe" in result) == True:
-                    result = result.replace('\\th14.exe', '')
-                if ("\\th143.exe" in result) == True:
-                    result = result.replace('\\th143.exe', '')
-                if ("\\th145.exe" in result) == True:
-                    result = result.replace('\\th145.exe', '')
-                if ("\\th15.exe" in result) == True:
-                    result = result.replace('\\th15.exe', '')
-                if ("\\th155.exe" in result) == True:
-                    result = result.replace('\\th155.exe', '')
-                if ("\\th16.exe" in result) == True:
-                    result = result.replace('\\th16.exe', '')
-                if ("\\th165.exe" in result) == True:
-                    result = result.replace('\\th165.exe', '')
-                if ("\\th17.exe" in result) == True:
-                    result = result.replace('\\th17.exe', '')
-                if ("\\th175.exe" in result) == True:
-                    result = result.replace('\\th175.exe', '')
-                if ("\\th18.exe" in result) == True:
-                    result = result.replace('\\th18.exe', '')
-                if ("\\th19.exe" in result) == True:
-                    result = result.replace('\\th19.exe', '')
-                launcher.destroy()
-                print("アプリを開く（クイックスタート）：「" + result2 + "」、「" + result + "」の上で")
-                subprocess.run(result2,shell=True,cwd=result)
-                exit_py()
-            else:
-                error = messages[language][0][22] + result
-                messagebox.showerror(messages[language][0][8],error)
-        else:
-            messagebox.showerror(messages[language][0][8],messages[language][0][62])
-    except TypeError as e:
-        error = messages[language][0][9] + e
-        messagebox.showerror(messages[language][0][8],error)
-
 def launcher_widget():
     global launcher
     global gamelist
@@ -1158,7 +915,6 @@ def launcher_widget():
     launcher.title(messages[language][0][1])
     launcher.geometry("500x410")
     launcher.iconbitmap(default="icon.ico")
-    launcher.protocol("WM_DELETE_WINDOW",exit_py)
     launcherLabel = ttk.Label(launcher,text=messages[language][0][2],font=30)
     
     #存在するゲームの候補を出すListBox
@@ -1200,8 +956,6 @@ def launcher_widget():
     game_exe.pack(side=LEFT)
     custom_exe.pack(side=LEFT)
     list_update.pack(side=LEFT)
-    
-    gamelist.bind("<Button-3>",ButtonClick)
     
     launcher.update()
     launcher.lift()
