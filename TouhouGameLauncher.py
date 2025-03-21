@@ -791,6 +791,7 @@ def launch_game():
             launch_game2_open = Button(launch_game2,text=messages[language][0][20],font=30,command=open_game)
             launch_game2_rename = Button(launch_game2,text=messages[language][0][21],font=30,command=rename)
             launch_game2_cancel = Button(launch_game2,text=messages[language][0][18],font=30,command=open_game_cancel)
+            launch_game2_list.bind("<Button-3>",append_quick)
             launch_game2_label.pack()
             launch_game2_list.pack()
             launch_game2_open.pack(side=LEFT)
