@@ -18,6 +18,7 @@ import codecs
 import sys
 from time import sleep
 import webbrowser
+import shutil
 
 #続いていろいろな関数の定義
 global dire
@@ -25,6 +26,7 @@ global setting
 global game_name
 dire = []
 setting = [[],""]
+everyL = {}
 def exit_py():
     app = False
     sys.exit()
@@ -35,16 +37,17 @@ def setup():
     def set0_w_w():
         set0_w()
         while len(search_dire_k) != 0:
-            page2_next['state'] = 'disabled'
-        page2_next['state'] = 'normal'
+            page3_next['state'] = 'disabled'
+        page3_next['state'] = 'normal'
     
     dire = []
     setting = [[],""]
-    data = [{},[],[[],""]]
+    data = [{},[],[[],""],{}]
     
     def data_json_w():
         setting[1] = language
         data[2] = setting
+        data[3] = everyL
         data_json = Path("Appdata\\data.json")
         data_json = data_json.resolve()
         with open(data_json,"w",encoding="utf-8") as f:
@@ -60,20 +63,54 @@ def setup():
         setup_w.destroy()
         global app
         app = True
+        #direのディレクトリが存在していればスルー、1つでも存在していないものがあれば自動的にリロードするため、dataのdireを初期化。
+        for i in dire:
+            if os.path.exists(i) == False:
+                print(os.path.exists(i))
+                print("ディレクトリ：" + i + "、非存在")
+                print("リストを初期化")
+                dire = []
+                data[1] = dire
+                data[3] = everyL
+                with open("Appdata\\data.json","w") as f:
+                    json.dump(data,f)
+                break
+            else:
+                print(os.path.exists(i))
+                print("ディレクトリ：" + i + "、存在確認")
+        #dataからsettingのlanguageを検出
+        global language
+        if len(data[2]) == 2:
+            if data[2][1] != "":
+                language = data[2][1]
+            else:
+                language = "Japanese"
+                setting[1] = language
+                data[2] = setting
+                data[3] = everyL
+                with open("Appdata\\data.json","w") as f:
+                    json.dump(data,f)
+        else:
+            language = "Japanese"
+            setting[1] = language
+            data[2] = setting
+            data[3] = everyL
+            with open("Appdata\\data.json","w") as f:
+                json.dump(data,f)
         if len(dire) == 0:
             file_load()
             load()
-            kensaku.destroy()
         else:
             global Ingames
             Ingames = []
             for i in dire:
                 Ingames.append(i)
             load()
+        
         launcher_widget()
     
     
-    def next2():
+    def next3():
         page2.destroy()
         page3 = Canvas(setup_w,width=500,height=500)
         page3.place(x=0,y=0)
@@ -86,22 +123,52 @@ def setup():
         setup_close_b = Button(page3,text=messages[language][0][53],font=30,command=setup_close)
         setup_close_b.pack(side=BOTTOM)
     
-    def next1():
-        global page2
-        global page2_next
+    def next2():
+        global page3
+        global page3_next
         data_json_w()
         print("言語”" + language + "”を選択")
         print(setting)
         #ページ2：ファイル検索場所を選択
-        page1.destroy()
-        page2 = Canvas(setup_w,width=500,height=500)
-        page2.place(x=0,y=0)
+        page2.destroy()
+        page3 = Canvas(setup_w,width=500,height=500)
+        page3.place(x=0,y=0)
         message1 = Label(page2,text=messages[language][0][49],font=30)
         message1.pack()
         sansho_dire_b = Button(page2,text=messages[language][0][28],font=30,command=set0_w_w)
         sansho_dire_b.pack()
-        page2_next = Button(page2,text=messages[language][0][48],font=30,command=next2)
-        page2_next.pack(side=BOTTOM)
+        page3_next = Button(page2,text=messages[language][0][48],font=30,command=next3)
+        page3_next.pack(side=BOTTOM)
+    
+    def sele_fi():
+        global search_dire_k
+        filet = [("JSON sorce","*.json")]
+        file = filedialog.askopenfilename(filetypes=filet,initialdir="PC")
+        if file != "":
+            if os.path.isfile(file) == False:
+                messagebox.showerror(messages[language][0][8],messages[language][0][58])
+            else:
+                with open(file,"r",encoding="utf-8") as f:
+                    data = json.load(f)
+                if (len(data) == 4) and (len(data[2]) == 2):
+                    shutil.copy(file,"Appdata")
+                    setting = data[2]
+                    search_dire_k = setting[0]
+                    next3()
+                else:
+                    messagebox.showerror(messages[language][0][8],messages[language][0][59])
+    
+    def next1():
+        global page2
+        page1.destroy()
+        page2 = Canvas(setup_w,width=500,height=500)
+        page2.place(x=0,y=0)
+        message1 = Label(page2,text=messages[language][0][55],font=30)
+        message1.pack()
+        sansyo = Button(page2,text=messages[language][0][56],font=30,command=next2)
+        se_fi = Button(page2,text=messages[language][0][57],font=30,command=sele_fi)
+        sansyo.pack()
+        se_fi.pack()
     
     def sentaku1(event):
         page1_next['state'] = 'normal'
@@ -217,6 +284,7 @@ def file_load():
             dire = data[1]
             setting = data[2]
             language = setting[1]
+            everyL = data[3]
         except TypeError as e:
             setup()
     else:
@@ -228,7 +296,7 @@ def file_load():
     
     #ディレクトリ検索用のウィンドウを生成する。
     kensaku = Tk()
-    kensaku.title(messages[language][0][1])
+    kensaku.title("TouhouGameLauncher ver2.2.1")
     kensaku.geometry("300x100")
     kensaku.iconbitmap(default="icon.ico")
     kensakuchu = ttk.Label(kensaku,text=messages[language][0][0],font=30)
@@ -255,6 +323,7 @@ def load():
     global Incustom
     global check_game
     global dire
+    global item_game_list
     
     Incustom = []
     check_game = [0 for i in range(26)]
@@ -389,6 +458,7 @@ def reload():
             dire = data[1]
             setting = data[2]
             language = setting[1]
+            everyL = data[3]
         except TypeError as e:
             setup()
     else:
@@ -416,15 +486,18 @@ if os.path.isfile(p.resolve()):
         file_names = data[0]
         dire = data[1]
         setting = data[2]
+        everyL = data[3]
     except TypeError as e:
         file_names = {}
         dire = []
         setting = []
+        everyL = {}
         setup()
 else:
     file_names = {}
     dire = []
     setting = []
+    everyL = {}
     setup()
 
 #新しいゲームが出たらここを変更する
@@ -445,6 +518,7 @@ def data_json_update(message):
     data[0] = file_names
     data[1] = dire
     data[2] = setting
+    data[3] = everyL
     with open("Appdata\\data.json","w") as f:
         json.dump(data,f)
     if message == "":
@@ -461,6 +535,7 @@ for i in dire:
         print("リストを初期化")
         dire = []
         data[1] = dire
+        data[3] = everyL
         with open("Appdata\\data.json","w") as f:
             json.dump(data,f)
         break
@@ -478,12 +553,14 @@ if len(data[2]) == 2:
         language = "Japanese"
         setting[1] = language
         data[2] = setting
+        data[3] = everyL
         with open("Appdata\\data.json","w") as f:
             json.dump(data,f)
 else:
     language = "Japanese"
     setting[1] = language
     data[2] = setting
+    data[3] = everyL
     with open("Appdata\\data.json","w") as f:
         json.dump(data,f)
 
@@ -494,15 +571,18 @@ if os.path.isfile(p.resolve()):
         file_names = data[0]
         dire = data[1]
         setting = data[2]
+        everyL = data[3]
     except TypeError as e:
         file_names = {}
         dire = []
         setting = []
+        everyL = {}
         setup()
 else:
     file_names = {}
     dire = []
     setting = []
+    everyL = {}
     setup()
 
 #ここで読み込み関数実行
@@ -531,6 +611,16 @@ def selected_index():
     selected_game = selected_game2[0]
     
 
+def append_quick(event):
+    global selected_game4
+    selected_game4 = launch_game2_list.curselection()
+    everyL[item_game_list[selected_game]] = selected_game4[0]
+    data[3] = everyL
+    with open("Appdata\\data.json","w",encoding="utf-8") as f:
+        json.dump(data,f)
+    open_list_h[open_list.index(item_game_list[selected_game])] = "[Q]" + open_list_h[open_list.index(item_game_list[selected_game])]
+    launch_game2_list.update()
+
 def launch_game():
     #thXX.exeを起動するための処理
     try:
@@ -538,9 +628,13 @@ def launch_game():
         if len(result_search_index_games[selected_game]) >= 2:
             #ファイル候補を出す
             global launch_game2
+            global launch_game2_list
+            global launch_game2_list_var
+            global open_list_h
+            global open_list
             launch_game2 = Tk()
             launch_game2.geometry("550x200")
-            launch_game2.title(messages[language][0][1])
+            launch_game2.title("TouhouGameLauncher ver2.2.1")
             launch_game2.iconbitmap(default="icon.ico")
             
             open_list = []
@@ -627,7 +721,7 @@ def launch_game():
                     result = result_search_index_games[selected_game][open_games]
                     rename_window = Tk()
                     rename_window.geometry("500x100")
-                    rename_window.title(messages[language][0][1])
+                    rename_window.title("TouhouGameLauncher ver2.2.1")
                     rename_window.iconbitmap(default="icon.ico")
                     rename_label = Label(rename_window,text=messages[language][0][10],font=30)
                     rename_label2 = Label(rename_window,text=result)
@@ -676,15 +770,24 @@ def launch_game():
                     messagebox.showerror(messages[language][0][8],error)
             
             launch_game2_label = ttk.Label(launch_game2,text=messages[language][0][19],font=30)
-            launch_game2_list = Listbox(launch_game2,width=490,font=20,height=5)
             for i in range(len(result_search_index_games[selected_game])):
-                if result_search_index_games[selected_game][i] in file_names:
-                    launch_game2_list.insert(END,file_names[result_search_index_games[selected_game][i]])
-                    open_list_h.append(file_names[result_search_index_games[selected_game][i]])
+                if (selected_game,i) in everyL:
+                    if result_search_index_games[selected_game][i] in file_names:
+                        a = "[Q]" + file_names[result_search_index_games[selected_game][i]]
+                        open_list_h.append(a)
+                    else:
+                        a = "[Q]" + result_search_index_games[selected_game][i]
+                        open_list_h.append(a)
                 else:
-                    launch_game2_list.insert(END,result_search_index_games[selected_game][i])
-                    open_list_h.append(result_search_index_games[selected_game][i])
+                    if result_search_index_games[selected_game][i] in file_names:
+                        a = file_names[result_search_index_games[selected_game][i]]
+                        open_list_h.append(a)
+                    else:
+                        a = result_search_index_games[selected_game][i]
+                        open_list_h.append(a)
                 open_list.append(i)
+            launch_game2_list_var = StringVar(launch_game2,value=open_list_h)
+            launch_game2_list = Listbox(launch_game2,width=490,font=20,height=5,listvariable=launch_game2_list_var)
             launch_game2_open = Button(launch_game2,text=messages[language][0][20],font=30,command=open_game)
             launch_game2_rename = Button(launch_game2,text=messages[language][0][21],font=30,command=rename)
             launch_game2_cancel = Button(launch_game2,text=messages[language][0][18],font=30,command=open_game_cancel)
@@ -772,7 +875,7 @@ def launch_custom():
             global launch_custom2
             launch_custom2 = Tk()
             launch_custom2.geometry("550x200")
-            launch_custom2.title(messages[language][0][1])
+            launch_custom2.title("TouhouGameLauncher ver2.2.1")
             launch_custom2.iconbitmap(default="icon.ico")
             open_list = []
             open_list_h = []
@@ -869,10 +972,10 @@ def app_info():
     info_window = Tk()
     info_window.geometry("500x300")
     info_window.iconbitmap("icon.ico")
-    info_window.title(messages[language][0][1])
+    info_window.title("TouhouGameLauncher ver2.2.1")
     
-    info_title = Label(info_window,text=messages[language][0][37],font=50)
-    info_version = Label(info_window,text="ver2.2.0\nProgramed by Gottsudayo\n2025-2025",font=20)
+    info_title = Label(info_window,text="Touhou Game Launcher",font=50)
+    info_version = Label(info_window,text="ver2.2.1\nProgramed by Gottsudayo\n2025-2025",font=20)
     
     def close_info():
         info_window.destroy()
@@ -907,12 +1010,75 @@ def open_wiki():
 def open_otoiawase():
     webbrowser.open("https://github.com/gottsudayo/TouhouGameLauncher-Python-/wiki/%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B")
 
+def quick_launch(event):
+    selected_index()
+    if item_game_list[selected_game] in everyL:
+        result = everyL[item_game_list[selected_game]]
+        result2 = result
+        #新しいゲームが出たらここを変更する
+        if ("\\th06.exe" in result) == True:
+            result = result.replace('\\th06.exe', '')
+        if ("\\th07.exe" in result) == True:
+            result = result.replace('\\th07.exe', '')
+        if ("\\th075.exe" in result) == True:
+            result = result.replace('\\th075.exe', '')
+        if ("\\th08.exe" in result) == True:
+            result = result.replace('\\th08.exe', '')
+        if ("\\th09.exe" in result) == True:
+            result = result.replace('\\th09.exe', '')
+        if ("\\th095.exe" in result) == True:
+            result = result.replace('\\th095.exe', '')
+        if ("\\th10.exe" in result) == True:
+            result = result.replace('\\th10.exe', '')
+        if ("\\th105.exe" in result) == True:
+            result = result.replace('\\th105.exe', '')
+        if ("\\th11.exe" in result) == True:
+            result = result.replace('\\th11.exe', '')
+        if ("\\th12.exe" in result) == True:
+            result = result.replace('\\th12.exe', '')
+        if ("\\th123.exe" in result) == True:
+            result = result.replace('\\th123.exe', '')
+        if ("\\th125.exe" in result) == True:
+            result = result.replace('\\th125.exe', '')
+        if ("\\th128.exe" in result) == True:
+            result = result.replace('\\th128.exe', '')
+        if ("\\th13.exe" in result) == True:
+            result = result.replace('\\th13.exe', '')
+        if ("\\th135.exe" in result) == True:
+            result = result.replace('\\th135.exe', '')
+        if ("\\th14.exe" in result) == True:
+            result = result.replace('\\th14.exe', '')
+        if ("\\th143.exe" in result) == True:
+            result = result.replace('\\th143.exe', '')
+        if ("\\th145.exe" in result) == True:
+            result = result.replace('\\th145.exe', '')
+        if ("\\th15.exe" in result) == True:
+            result = result.replace('\\th15.exe', '')
+        if ("\\th155.exe" in result) == True:
+            result = result.replace('\\th155.exe', '')
+        if ("\\th16.exe" in result) == True:
+            result = result.replace('\\th16.exe', '')
+        if ("\\th165.exe" in result) == True:
+            result = result.replace('\\th165.exe', '')
+        if ("\\th17.exe" in result) == True:
+            result = result.replace('\\th17.exe', '')
+        if ("\\th175.exe" in result) == True:
+            result = result.replace('\\th175.exe', '')
+        if ("\\th18.exe" in result) == True:
+            result = result.replace('\\th18.exe', '')
+        if ("\\th19.exe" in result) == True:
+            result = result.replace('\\th19.exe', '')
+        launcher.destroy()
+        print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
+        subprocess.run(result2,shell=True,cwd=result)
+        exit_py()
+
 def launcher_widget():
     global launcher
     global gamelist
     global menu_language
     launcher = Tk()
-    launcher.title(messages[language][0][1])
+    launcher.title("TouhouGameLauncher ver2.2.1")
     launcher.geometry("500x410")
     launcher.iconbitmap(default="icon.ico")
     launcherLabel = ttk.Label(launcher,text=messages[language][0][2],font=30)
@@ -950,6 +1116,8 @@ def launcher_widget():
     menu_help.add_command(label=messages[language][0][44],command=open_wiki)
     menu_help.add_command(label=messages[language][0][45],command=open_otoiawase)
     menubar.add_cascade(label=messages[language][0][46],menu=menu_help)
+    
+    gamelist.bind("<Button-3>",quick_launch)
     
     launcherLabel.pack()
     gamelist.pack()

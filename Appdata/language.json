@@ -53,7 +53,12 @@
     "設定適用中...",
     "設定が完了しました！\nランチャーを起動します。",
     "閉じる",
-    "東方原作ランチャー\nセットアップウィザード"
+    "東方原作ランチャー\nセットアップウィザード",
+    "data.jsonを作成する方法を選択してください。",
+    "新規作成",
+    "ファイル選択",
+    "ファイルが見つかりませんでした。",
+    "それはdata.jsonではありません。"
     ],"日本語"],
             "English":[[
                 "Searching Directory...",
@@ -111,11 +116,11 @@
                 "Completed settings\nI'll launch Application.",
                 "Close",
                 "TouhouGameLauncher\nSetup wizard",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "Please select how to make data.json.",
+                "Create a new file",
+                "Select file",
+                "I couldn't find file.",
+                "It's not data.json.",
                 "",
                 "",
                 "",
@@ -178,7 +183,12 @@
         "지금 설정 적용 중",
         "설정 완료!\n앱을 실행하겠습니다.",
         "닫다",
-        "TouhouGameLauncher\nSetup wizard"
+        "TouhouGameLauncher\nSetup wizard",
+        "data.json을 만드는 방법을 선택해 주세요.",
+        "새 파일을 만듭니다",
+        "파일 선택",
+        "파일을 찾을 수 없습니다.",
+        "data.json이 아닙니다."
     ],"한국어"]},
     {"Japanese":
     {"th06.exe":["東方紅魔郷　とうほうこうまきょう","2002"],
