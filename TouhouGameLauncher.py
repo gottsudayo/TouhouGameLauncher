@@ -32,6 +32,13 @@ def exit_py():
     sys.exit()
 global languages
 languages = []
+global app
+app = True
+
+
+def suc():
+    app = False
+    sys.exit()
 
 def setup():
     def set0_w_w():
@@ -58,6 +65,7 @@ def setup():
     setup_w.title("TouhouGameLauncher Setup")
     setup_w.geometry("500x500")
     setup_w.iconbitmap(default="icon.ico")
+    setup_w.protocol("WM_DELETE_WINDOW",suc)
     
     def setup_close():
         setup_w.destroy()
@@ -260,6 +268,13 @@ else:
 messages = language_j[0]
 games = language_j[1]
 
+#messagesの識別
+for pack in messages:
+    print("Checking language message pack ”" + messages[pack][1] + "”")
+    if len(messages[pack][0]) != 60:
+        messagebox.showerror("Error","This is no language.json.\nDid you download older or newer language.json than this version to here?")
+        exit_py()
+
 for i in list(messages):
     languages.append(i)
     print("言語パック”" + i + "”を認識")
@@ -286,17 +301,20 @@ def file_load():
             language = setting[1]
             everyL = data[3]
         except TypeError as e:
-            setup()
+            if app == True:
+                setup()
     else:
-        setup()
+        if app == True:
+            setup()
     
     if len(setting[0]) == 0:
-        setup()
+        if app == True:
+            setup()
         return
     
     #ディレクトリ検索用のウィンドウを生成する。
     kensaku = Tk()
-    kensaku.title("TouhouGameLauncher ver2.2.1")
+    kensaku.title("TouhouGameLauncher ver2.2.2")
     kensaku.geometry("300x100")
     kensaku.iconbitmap(default="icon.ico")
     kensakuchu = ttk.Label(kensaku,text=messages[language][0][0],font=30)
@@ -460,9 +478,11 @@ def reload():
             language = setting[1]
             everyL = data[3]
         except TypeError as e:
-            setup()
+            if app == True:
+                setup()
     else:
-        setup()
+        if app == True:
+            setup()
     
     #ディレクトリ検索
     file_load()
@@ -476,7 +496,8 @@ def reload():
 data = []
 p = Path('Appdata\\data.json')
 if os.path.isfile(p.resolve()) == False:
-    setup()
+    if app == True:
+        setup()
 
 if os.path.isfile(p.resolve()):
     try:
@@ -492,13 +513,15 @@ if os.path.isfile(p.resolve()):
         dire = []
         setting = []
         everyL = {}
-        setup()
+        if app == True:
+            setup()
 else:
     file_names = {}
     dire = []
     setting = []
     everyL = {}
-    setup()
+    if app == True:
+        setup()
 
 #新しいゲームが出たらここを変更する
 game_name = ["th06.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe","th10.exe","th105.exe","th11.exe","th12.exe","th123.exe","th125.exe","th128.exe","th13.exe","th135.exe","th14.exe","th143.exe","th145.exe","th15.exe","th155.exe","th16.exe","th165.exe","th17.exe","th18.exe","th185.exe","th19.exe"]
@@ -507,7 +530,8 @@ game_name = ["th06.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe"
 data = []
 p = Path('Appdata\\data.json')
 if os.path.isfile(p.resolve()) == False:
-    setup()
+    if app == True:
+        setup()
 else:
     with open(p.resolve(),"r",encoding="utf-8") as f:
         data = json.load(f)
@@ -577,13 +601,15 @@ if os.path.isfile(p.resolve()):
         dire = []
         setting = []
         everyL = {}
-        setup()
+        if app == True:
+            setup()
 else:
     file_names = {}
     dire = []
     setting = []
     everyL = {}
-    setup()
+    if app == True:
+        setup()
 
 #ここで読み込み関数実行
 try:
@@ -602,7 +628,8 @@ except TypeError as e:
     print("TypeError : " + str(e))
     if os.path.isfile("Appdata\\data.json"):
         os.remove("Appdata\\data.json")
-    setup()
+    if app == True:
+        setup()
 
 
 def selected_index():
@@ -614,12 +641,25 @@ def selected_index():
 def append_quick(event):
     global selected_game4
     selected_game4 = launch_game2_list.curselection()
-    everyL[item_game_list[selected_game]] = selected_game4[0]
-    data[3] = everyL
-    with open("Appdata\\data.json","w",encoding="utf-8") as f:
-        json.dump(data,f)
-    open_list_h[open_list.index(item_game_list[selected_game])] = "[Q]" + open_list_h[open_list.index(item_game_list[selected_game])]
-    launch_game2_list.update()
+    if not (item_game_list[selected_game],result_search_index_games[selected_game][selected_game4[0]]) in everyL.items():
+        everyL[item_game_list[selected_game]] = result_search_index_games[selected_game][selected_game4[0]]
+        data[3] = everyL
+        with open("Appdata\\data.json","w",encoding="utf-8") as f:
+            json.dump(data,f)
+        # ここに原因あり。エラー内容↓
+        print(everyL[item_game_list[selected_game]])
+        open_list_h[result_search_index_games[selected_game].index(everyL[item_game_list[selected_game]])] = "[Q]" + open_list_h[result_search_index_games[selected_game].index(everyL[item_game_list[selected_game]])]
+        launch_game2_list_var.set(open_list_h)
+        launch_game2_list.update()
+    else:
+        everyL.pop(item_game_list[selected_game])
+        with open("Appdata\\data.json","w",encoding="utf-8") as f:
+            json.dump(data,f)
+        for i in open_list_h:
+            if ("[Q]" in i):
+                open_list_h[open_list_h.index(i)] = i.replace("[Q]","")
+        launch_game2_list_var.set(open_list_h)
+        launch_game2_list.update()
 
 def launch_game():
     #thXX.exeを起動するための処理
@@ -634,7 +674,7 @@ def launch_game():
             global open_list
             launch_game2 = Tk()
             launch_game2.geometry("550x200")
-            launch_game2.title("TouhouGameLauncher ver2.2.1")
+            launch_game2.title("TouhouGameLauncher ver2.2.2")
             launch_game2.iconbitmap(default="icon.ico")
             
             open_list = []
@@ -721,7 +761,7 @@ def launch_game():
                     result = result_search_index_games[selected_game][open_games]
                     rename_window = Tk()
                     rename_window.geometry("500x100")
-                    rename_window.title("TouhouGameLauncher ver2.2.1")
+                    rename_window.title("TouhouGameLauncher ver2.2.2")
                     rename_window.iconbitmap(default="icon.ico")
                     rename_label = Label(rename_window,text=messages[language][0][10],font=30)
                     rename_label2 = Label(rename_window,text=result)
@@ -771,7 +811,8 @@ def launch_game():
             
             launch_game2_label = ttk.Label(launch_game2,text=messages[language][0][19],font=30)
             for i in range(len(result_search_index_games[selected_game])):
-                if (selected_game,i) in everyL:
+                print(everyL)
+                if (item_game_list[selected_game],result_search_index_games[selected_game][i]) in everyL.items():
                     if result_search_index_games[selected_game][i] in file_names:
                         a = "[Q]" + file_names[result_search_index_games[selected_game][i]]
                         open_list_h.append(a)
@@ -876,7 +917,7 @@ def launch_custom():
             global launch_custom2
             launch_custom2 = Tk()
             launch_custom2.geometry("550x200")
-            launch_custom2.title("TouhouGameLauncher ver2.2.1")
+            launch_custom2.title("TouhouGameLauncher ver2.2.2")
             launch_custom2.iconbitmap(default="icon.ico")
             open_list = []
             open_list_h = []
@@ -973,10 +1014,10 @@ def app_info():
     info_window = Tk()
     info_window.geometry("500x300")
     info_window.iconbitmap("icon.ico")
-    info_window.title("TouhouGameLauncher ver2.2.1")
+    info_window.title("TouhouGameLauncher ver2.2.2")
     
     info_title = Label(info_window,text="Touhou Game Launcher",font=50)
-    info_version = Label(info_window,text="ver2.2.1\nProgramed by Gottsudayo\n2025-2025",font=20)
+    info_version = Label(info_window,text="ver2.2.2\nProgramed by Gottsudayo\n2025-2025",font=20)
     
     def close_info():
         info_window.destroy()
@@ -1079,7 +1120,7 @@ def launcher_widget():
     global gamelist
     global menu_language
     launcher = Tk()
-    launcher.title("TouhouGameLauncher ver2.2.1")
+    launcher.title("TouhouGameLauncher ver2.2.2")
     launcher.geometry("500x410")
     launcher.iconbitmap(default="icon.ico")
     launcherLabel = ttk.Label(launcher,text=messages[language][0][2],font=30)
@@ -1131,7 +1172,6 @@ def launcher_widget():
     
     launcher.mainloop()
 
-global app
 app = True
 
 launcher_widget()
