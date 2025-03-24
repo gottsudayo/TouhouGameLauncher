@@ -141,11 +141,11 @@ def setup():
         page2.destroy()
         page3 = Canvas(setup_w,width=500,height=500)
         page3.place(x=0,y=0)
-        message1 = Label(page2,text=messages[language][0][49],font=30)
+        message1 = Label(page3,text=messages[language][0][49],font=30)
         message1.pack()
-        sansho_dire_b = Button(page2,text=messages[language][0][28],font=30,command=set0_w_w)
+        sansho_dire_b = Button(page3,text=messages[language][0][28],font=30,command=set0_w_w)
         sansho_dire_b.pack()
-        page3_next = Button(page2,text=messages[language][0][48],font=30,command=next3)
+        page3_next = Button(page3,text=messages[language][0][48],font=30,command=next3)
         page3_next.pack(side=BOTTOM)
     
     def sele_fi():
@@ -314,7 +314,7 @@ def file_load():
     
     #ディレクトリ検索用のウィンドウを生成する。
     kensaku = Tk()
-    kensaku.title("TouhouGameLauncher ver2.2.2")
+    kensaku.title("TouhouGameLauncher ver2.2.3")
     kensaku.geometry("300x100")
     kensaku.iconbitmap(default="icon.ico")
     kensakuchu = ttk.Label(kensaku,text=messages[language][0][0],font=30)
@@ -674,7 +674,7 @@ def launch_game():
             global open_list
             launch_game2 = Tk()
             launch_game2.geometry("550x200")
-            launch_game2.title("TouhouGameLauncher ver2.2.2")
+            launch_game2.title("TouhouGameLauncher ver2.2.3")
             launch_game2.iconbitmap(default="icon.ico")
             
             open_list = []
@@ -761,7 +761,7 @@ def launch_game():
                     result = result_search_index_games[selected_game][open_games]
                     rename_window = Tk()
                     rename_window.geometry("500x100")
-                    rename_window.title("TouhouGameLauncher ver2.2.2")
+                    rename_window.title("TouhouGameLauncher ver2.2.3")
                     rename_window.iconbitmap(default="icon.ico")
                     rename_label = Label(rename_window,text=messages[language][0][10],font=30)
                     rename_label2 = Label(rename_window,text=result)
@@ -917,7 +917,7 @@ def launch_custom():
             global launch_custom2
             launch_custom2 = Tk()
             launch_custom2.geometry("550x200")
-            launch_custom2.title("TouhouGameLauncher ver2.2.2")
+            launch_custom2.title("TouhouGameLauncher ver2.2.3")
             launch_custom2.iconbitmap(default="icon.ico")
             open_list = []
             open_list_h = []
@@ -1014,10 +1014,10 @@ def app_info():
     info_window = Tk()
     info_window.geometry("500x300")
     info_window.iconbitmap("icon.ico")
-    info_window.title("TouhouGameLauncher ver2.2.2")
+    info_window.title("TouhouGameLauncher ver2.2.3")
     
     info_title = Label(info_window,text="Touhou Game Launcher",font=50)
-    info_version = Label(info_window,text="ver2.2.2\nProgramed by Gottsudayo\n2025-2025",font=20)
+    info_version = Label(info_window,text="ver2.2.3\nProgramed by Gottsudayo\n2025-2025",font=20)
     
     def close_info():
         info_window.destroy()
@@ -1120,7 +1120,7 @@ def launcher_widget():
     global gamelist
     global menu_language
     launcher = Tk()
-    launcher.title("TouhouGameLauncher ver2.2.2")
+    launcher.title("TouhouGameLauncher ver2.2.3")
     launcher.geometry("500x410")
     launcher.iconbitmap(default="icon.ico")
     launcherLabel = ttk.Label(launcher,text=messages[language][0][2],font=30)
