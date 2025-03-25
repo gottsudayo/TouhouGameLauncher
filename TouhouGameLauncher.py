@@ -46,7 +46,7 @@ def setup():
         while len(search_dire_k) != 0:
             page3_next['state'] = 'disabled'
         page3_next['state'] = 'normal'
-    
+    global setting
     dire = []
     setting = [[],""]
     data = [{},[],[[],""],{}]
@@ -122,7 +122,7 @@ def setup():
         page2.destroy()
         page3 = Canvas(setup_w,width=500,height=500)
         page3.place(x=0,y=0)
-        message2 = Label(page3,text=messages[language][0][51])
+        message2 = Label(page3,text=messages[language][0][51],font=30)
         message2.pack()
         setting[0] = search_dire_k
         data_json_w()
@@ -165,6 +165,48 @@ def setup():
                     next3()
                 else:
                     messagebox.showerror(messages[language][0][8],messages[language][0][59])
+    def select_OF():
+        global search_dire_k
+        filet = [("JSON sorce","*.json")]
+        file = filedialog.askopenfilenames(filetypes=filet,initialdir="PC")
+        if file != "":
+            for i in file:
+                if os.path.isfile(i) == False:
+                    messagebox.showerror(messages[language][0][8],messages[language][0][58])
+                    pass
+            #～ver1.2.1
+            if type(file) == tuple:
+                data = [{},[],[[],"Japanese"],{}]
+                for i in file:
+                    with open(i,"r",encoding="utf-8") as f:
+                        filea = json.load(f)
+                    if os.path.basename(i) == "dire.json":
+                        data[1] = filea
+                    elif os.path.basename(i) == "data.json":
+                        data[0] = filea
+                    else:
+                        messagebox.showerror(messages[language][0][8],messages[language][0][59])
+                        exit_py()
+                global dire
+                dire = data[1]
+                search_dire_k = []
+                next2()
+            else:
+                with open(file,"r",encoding="utf-8") as f:
+                    data = json.load(f)
+                #ver2.0.0～ver2.2.0
+                if len(data) == 3:
+                    data.append({})
+                    global setting
+                    global everyL
+                    setting = data[2]
+                    search_dire_k = setting[0]
+                    language = setting[1]
+                    everyL = {}
+                    next3()
+                else:
+                    messagebox.showerror(messages[language][0][8],messages[language][0][61])
+                
     
     def next1():
         global page2
@@ -175,8 +217,10 @@ def setup():
         message1.pack()
         sansyo = Button(page2,text=messages[language][0][56],font=30,command=next2)
         se_fi = Button(page2,text=messages[language][0][57],font=30,command=sele_fi)
+        se_old_fi = Button(page2,text=messages[language][0][60],font=30,command=select_OF)
         sansyo.pack()
         se_fi.pack()
+        se_old_fi.pack()
     
     def sentaku1(event):
         page1_next['state'] = 'normal'
@@ -271,7 +315,7 @@ games = language_j[1]
 #messagesの識別
 for pack in messages:
     print("Checking language message pack ”" + messages[pack][1] + "”")
-    if len(messages[pack][0]) != 60:
+    if len(messages[pack][0]) != 62:
         messagebox.showerror("Error","This is no language.json.\nDid you download older or newer language.json than this version to here?")
         exit_py()
 
@@ -302,19 +346,22 @@ def file_load():
             everyL = data[3]
         except TypeError as e:
             if app == True:
+                print("data.jsonの読み込みに失敗")
                 setup()
     else:
         if app == True:
+            print("data.jsonの読み込みに失敗2")
             setup()
     
     if len(setting[0]) == 0:
         if app == True:
+            print("settingの読み込みに失敗")
             setup()
         return
     
     #ディレクトリ検索用のウィンドウを生成する。
     kensaku = Tk()
-    kensaku.title("TouhouGameLauncher ver2.2.3")
+    kensaku.title("TouhouGameLauncher ver2.3.0")
     kensaku.geometry("300x100")
     kensaku.iconbitmap(default="icon.ico")
     kensakuchu = ttk.Label(kensaku,text=messages[language][0][0],font=30)
@@ -479,9 +526,11 @@ def reload():
             everyL = data[3]
         except TypeError as e:
             if app == True:
+                print("reload時にdata.jsonの読み込みに失敗")
                 setup()
     else:
         if app == True:
+            print("reload時にdata.jsonの読み込みに失敗2")
             setup()
     
     #ディレクトリ検索
@@ -495,9 +544,6 @@ def reload():
 #data.jsonの読み込み
 data = []
 p = Path('Appdata\\data.json')
-if os.path.isfile(p.resolve()) == False:
-    if app == True:
-        setup()
 
 if os.path.isfile(p.resolve()):
     try:
@@ -514,6 +560,7 @@ if os.path.isfile(p.resolve()):
         setting = []
         everyL = {}
         if app == True:
+            print("data.jsonの読み込みに失敗3")
             setup()
 else:
     file_names = {}
@@ -521,21 +568,11 @@ else:
     setting = []
     everyL = {}
     if app == True:
+        print("data.jsonがない2")
         setup()
 
 #新しいゲームが出たらここを変更する
 game_name = ["th06.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe","th10.exe","th105.exe","th11.exe","th12.exe","th123.exe","th125.exe","th128.exe","th13.exe","th135.exe","th14.exe","th143.exe","th145.exe","th15.exe","th155.exe","th16.exe","th165.exe","th17.exe","th18.exe","th185.exe","th19.exe"]
-
-#data.jsonの読み込み
-data = []
-p = Path('Appdata\\data.json')
-if os.path.isfile(p.resolve()) == False:
-    if app == True:
-        setup()
-else:
-    with open(p.resolve(),"r",encoding="utf-8") as f:
-        data = json.load(f)
-
 
 def data_json_update(message):
     data = [{},[],[]]
@@ -587,29 +624,6 @@ else:
     data[3] = everyL
     with open("Appdata\\data.json","w") as f:
         json.dump(data,f)
-
-if os.path.isfile(p.resolve()):
-    try:
-        with open('Appdata\\data.json',mode="r",encoding="utf-8") as f:
-            data = json.load(f)
-        file_names = data[0]
-        dire = data[1]
-        setting = data[2]
-        everyL = data[3]
-    except TypeError as e:
-        file_names = {}
-        dire = []
-        setting = []
-        everyL = {}
-        if app == True:
-            setup()
-else:
-    file_names = {}
-    dire = []
-    setting = []
-    everyL = {}
-    if app == True:
-        setup()
 
 #ここで読み込み関数実行
 try:
@@ -674,7 +688,7 @@ def launch_game():
             global open_list
             launch_game2 = Tk()
             launch_game2.geometry("550x200")
-            launch_game2.title("TouhouGameLauncher ver2.2.3")
+            launch_game2.title("TouhouGameLauncher ver2.3.0")
             launch_game2.iconbitmap(default="icon.ico")
             
             open_list = []
@@ -761,7 +775,7 @@ def launch_game():
                     result = result_search_index_games[selected_game][open_games]
                     rename_window = Tk()
                     rename_window.geometry("500x100")
-                    rename_window.title("TouhouGameLauncher ver2.2.3")
+                    rename_window.title("TouhouGameLauncher ver2.3.0")
                     rename_window.iconbitmap(default="icon.ico")
                     rename_label = Label(rename_window,text=messages[language][0][10],font=30)
                     rename_label2 = Label(rename_window,text=result)
@@ -917,7 +931,7 @@ def launch_custom():
             global launch_custom2
             launch_custom2 = Tk()
             launch_custom2.geometry("550x200")
-            launch_custom2.title("TouhouGameLauncher ver2.2.3")
+            launch_custom2.title("TouhouGameLauncher ver2.3.0")
             launch_custom2.iconbitmap(default="icon.ico")
             open_list = []
             open_list_h = []
@@ -1014,10 +1028,10 @@ def app_info():
     info_window = Tk()
     info_window.geometry("500x300")
     info_window.iconbitmap("icon.ico")
-    info_window.title("TouhouGameLauncher ver2.2.3")
+    info_window.title("TouhouGameLauncher ver2.3.0")
     
     info_title = Label(info_window,text="Touhou Game Launcher",font=50)
-    info_version = Label(info_window,text="ver2.2.3\nProgramed by Gottsudayo\n2025-2025",font=20)
+    info_version = Label(info_window,text="ver2.3.0\nProgramed by Gottsudayo\n2025-2025",font=20)
     
     def close_info():
         info_window.destroy()
@@ -1120,7 +1134,7 @@ def launcher_widget():
     global gamelist
     global menu_language
     launcher = Tk()
-    launcher.title("TouhouGameLauncher ver2.2.3")
+    launcher.title("TouhouGameLauncher ver2.3.0")
     launcher.geometry("500x410")
     launcher.iconbitmap(default="icon.ico")
     launcherLabel = ttk.Label(launcher,text=messages[language][0][2],font=30)
