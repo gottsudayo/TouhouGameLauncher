@@ -454,10 +454,65 @@ def load():
             Incustom.append(i.replace("th18.exe", "custom.exe"))
         if "th19.exe" in i:
             Incustom.append(i.replace("th19.exe", "custom.exe"))
-    
+        if "th20.exe" in i:
+              Incustom.append(i.replace("th20.exe","custom.exe"))
+        if "th06tr.exe" in i:
+              Incustom.append(i.replace("th06tr.exe", "custom.exe"))
+        if "th07tr.exe" in i:
+            Incustom.append(i.replace("th07tr.exe", "custom.exe"))
+        if "th075tr.exe" in i:
+            Incustom.append(i.replace("th075tr.exe", "custom.exe"))
+        if "th08tr.exe" in i:
+            Incustom.append(i.replace("th08tr.exe", "custom.exe"))
+        if "th09tr.exe" in i:
+            Incustom.append(i.replace("th09tr.exe", "custom.exe"))
+        if "th095tr.exe" in i:
+            Incustom.append(i.replace("th095tr.exe", "custom.exe"))
+        if "th10tr.exe" in i:
+            Incustom.append(i.replace("th10tr.exe", "custom.exe"))
+        if "th105tr.exe" in i:
+            Incustom.append(i.replace("th105tr.exe", "custom.exe"))
+        if "th11tr.exe" in i:
+            Incustom.append(i.replace("th11tr.exe", "custom.exe"))
+        if "th12tr.exe" in i:
+            Incustom.append(i.replace("th12tr.exe", "custom.exe"))
+        if "th123tr.exe" in i:
+            Incustom.append(i.replace("th123tr.exe", "custom.exe"))
+        if "th125tr.exe" in i:
+            Incustom.append(i.replace("th125tr.exe", "custom.exe"))
+        if "th128tr.exe" in i:
+            Incustom.append(i.replace("th128tr.exe", "custom.exe"))
+        if "th13tr.exe" in i:
+            Incustom.append(i.replace("th13tr.exe", "custom.exe"))
+        if "th135tr.exe" in i:
+            Incustom.append(i.replace("th135tr.exe", "custom.exe"))
+        if "th14tr.exe" in i:
+            Incustom.append(i.replace("th14tr.exe", "custom.exe"))
+        if "th143tr.exe" in i:
+            Incustom.append(i.replace("th143tr.exe", "custom.exe"))
+        if "th145tr.exe" in i:
+            Incustom.append(i.replace("th145tr.exe", "custom.exe"))
+        if "th15tr.exe" in i:
+            Incustom.append(i.replace("th15tr.exe", "custom.exe"))
+        if "th155tr.exe" in i:
+            Incustom.append(i.replace("th155tr.exe", "custom.exe"))
+        if "th16tr.exe" in i:
+            Incustom.append(i.replace("th16tr.exe", "custom.exe"))
+        if "th165tr.exe" in i:
+            Incustom.append(i.replace("th165tr.exe", "custom.exe"))
+        if "th17tr.exe" in i:
+            Incustom.append(i.replace("th17tr.exe", "custom.exe"))
+        if "th175tr.exe" in i:
+            Incustom.append(i.replace("th175tr.exe", "custom.exe"))
+        if "th18tr.exe" in i:
+            Incustom.append(i.replace("th18tr.exe", "custom.exe"))
+        if "th19tr.exe" in i:
+            Incustom.append(i.replace("th19tr.exe", "custom.exe"))
+        if "th20tr.exe" in i:
+            Incustom.append(i.replace("th20tr.exe","custom.exe"))
     for j in range(len(Ingames)):
         for i in range(len(game_name)):
-            if game_name[i] in Ingames[j]:
+            if (game_name[i] in Ingames[j]) or (game_name_tr[i] in Ingames[j]):
                 check_game[i] = 1
     
     #PCに存在するゲーム名（実行可能ファイル名）の抽出
@@ -572,7 +627,8 @@ else:
         setup()
 
 #新しいゲームが出たらここを変更する
-game_name = ["th06.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe","th10.exe","th105.exe","th11.exe","th12.exe","th123.exe","th125.exe","th128.exe","th13.exe","th135.exe","th14.exe","th143.exe","th145.exe","th15.exe","th155.exe","th16.exe","th165.exe","th17.exe","th18.exe","th185.exe","th19.exe"]
+game_name = ["th06.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe","th10.exe","th105.exe","th11.exe","th12.exe","th123.exe","th125.exe","th128.exe","th13.exe","th135.exe","th14.exe","th143.exe","th145.exe","th15.exe","th155.exe","th16.exe","th165.exe","th17.exe","th18.exe","th185.exe","th19.exe","th20.exe"]
+game_name_tr = ["th06tr.exe","th07tr.exe","th075tr.exe","th08tr.exe","th09tr.exe","th095tr.exe","th10tr.exe","th105tr.exe","th11tr.exe","th12tr.exe","th123tr.exe","th125tr.exe","th128tr.exe","th13tr.exe","th135tr.exe","th14tr.exe","th143tr.exe","th145tr.exe","th15tr.exe","th155tr.exe","th16tr.exe","th165tr.exe","th17tr.exe","th18tr.exe","th185tr.exe","th19tr.exe","th20tr.exe"]
 
 def data_json_update(message):
     data = [{},[],[]]
@@ -754,6 +810,62 @@ def launch_game():
                         result = result.replace('\\th18.exe', '')
                     if ("\\th19.exe" in result) == True:
                         result = result.replace('\\th19.exe', '')
+                    if ("\\th20.exe" in result) == True:
+                        result = result.replace('th20.exe','')
+                    if ("\\th06tr.exe" in result) == True:
+                        result = result.replace('\\th06tr.exe', '')
+                    if ("\\th07tr.exe" in result) == True:
+                        result = result.replace('\\th07tr.exe', '')
+                    if ("\\th075tr.exe" in result) == True:
+                        result = result.replace('\\th075tr.exe', '')
+                    if ("\\th08tr.exe" in result) == True:
+                        result = result.replace('\\th08tr.exe', '')
+                    if ("\\th09tr.exe" in result) == True:
+                        result = result.replace('\\th09tr.exe', '')
+                    if ("\\th095tr.exe" in result) == True:
+                        result = result.replace('\\th095tr.exe', '')
+                    if ("\\th10tr.exe" in result) == True:
+                        result = result.replace('\\th10tr.exe', '')
+                    if ("\\th105tr.exe" in result) == True:
+                        result = result.replace('\\th105tr.exe', '')
+                    if ("\\th11tr.exe" in result) == True:
+                        result = result.replace('\\th11tr.exe', '')
+                    if ("\\th12tr.exe" in result) == True:
+                        result = result.replace('\\th12tr.exe', '')
+                    if ("\\th123tr.exe" in result) == True:
+                        result = result.replace('\\th123tr.exe', '')
+                    if ("\\th125tr.exe" in result) == True:
+                        result = result.replace('\\th125tr.exe', '')
+                    if ("\\th128tr.exe" in result) == True:
+                        result = result.replace('\\th128tr.exe', '')
+                    if ("\\th13tr.exe" in result) == True:
+                        result = result.replace('\\th13tr.exe', '')
+                    if ("\\th135tr.exe" in result) == True:
+                        result = result.replace('\\th135tr.exe', '')
+                    if ("\\th14tr.exe" in result) == True:
+                        result = result.replace('\\th14tr.exe', '')
+                    if ("\\th143tr.exe" in result) == True:
+                        result = result.replace('\\th143tr.exe', '')
+                    if ("\\th145tr.exe" in result) == True:
+                        result = result.replace('\\th145tr.exe', '')
+                    if ("\\th15tr.exe" in result) == True:
+                        result = result.replace('\\th15tr.exe', '')
+                    if ("\\th155tr.exe" in result) == True:
+                        result = result.replace('\\th155tr.exe', '')
+                    if ("\\th16tr.exe" in result) == True:
+                        result = result.replace('\\th16tr.exe', '')
+                    if ("\\th165tr.exe" in result) == True:
+                        result = result.replace('\\th165tr.exe', '')
+                    if ("\\th17tr.exe" in result) == True:
+                        result = result.replace('\\th17tr.exe', '')
+                    if ("\\th175tr.exe" in result) == True:
+                        result = result.replace('\\th175tr.exe', '')
+                    if ("\\th18tr.exe" in result) == True:
+                        result = result.replace('\\th18tr.exe', '')
+                    if ("\\th19tr.exe" in result) == True:
+                        result = result.replace('\\th19tr.exe', '')
+                    if ("\\th20tr.exe" in result) == True:
+                        result = result.replace('\\th20tr.exe','')
                     launcher.destroy()
                     launch_game2.destroy()
                     print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
@@ -826,20 +938,15 @@ def launch_game():
             launch_game2_label = ttk.Label(launch_game2,text=messages[language][0][19],font=30)
             for i in range(len(result_search_index_games[selected_game])):
                 print(everyL)
+                global a
+                if "tr.exe" in result_search_index_games[selected_game][i]:
+                    if result_search_index_games[selected_game][i] in file_names:
+                        a = "[v0]" + file_names[result_search_index_games[selected_game][i]]
+                    else:
+                        a = "[v0]" + result_search_index_games[selected_game][i]
                 if (item_game_list[selected_game],result_search_index_games[selected_game][i]) in everyL.items():
-                    if result_search_index_games[selected_game][i] in file_names:
-                        a = "[Q]" + file_names[result_search_index_games[selected_game][i]]
-                        open_list_h.append(a)
-                    else:
-                        a = "[Q]" + result_search_index_games[selected_game][i]
-                        open_list_h.append(a)
-                else:
-                    if result_search_index_games[selected_game][i] in file_names:
-                        a = file_names[result_search_index_games[selected_game][i]]
-                        open_list_h.append(a)
-                    else:
-                        a = result_search_index_games[selected_game][i]
-                        open_list_h.append(a)
+                    a = "[Q]" + a
+                open_list_h.append(a)
                 open_list.append(i)
             launch_game2_list_var = StringVar(launch_game2,value=open_list_h)
             launch_game2_list = Listbox(launch_game2,width=490,font=20,height=5,listvariable=launch_game2_list_var)
@@ -910,6 +1017,62 @@ def launch_game():
                 result = result.replace('\\th18.exe', '')
             if ("\\th19.exe" in result) == True:
                 result = result.replace('\\th19.exe', '')
+            if ("\\th20.exe" in result) == True:
+                result = result.replace('th20.exe','')
+            if ("\\th06tr.exe" in result) == True:
+                result = result.replace('\\th06tr.exe', '')
+            if ("\\th07tr.exe" in result) == True:
+                result = result.replace('\\th07tr.exe', '')
+            if ("\\th075tr.exe" in result) == True:
+                result = result.replace('\\th075tr.exe', '')
+            if ("\\th08tr.exe" in result) == True:
+                result = result.replace('\\th08tr.exe', '')
+            if ("\\th09tr.exe" in result) == True:
+                result = result.replace('\\th09tr.exe', '')
+            if ("\\th095tr.exe" in result) == True:
+                result = result.replace('\\th095tr.exe', '')
+            if ("\\th10tr.exe" in result) == True:
+                result = result.replace('\\th10tr.exe', '')
+            if ("\\th105tr.exe" in result) == True:
+                result = result.replace('\\th105tr.exe', '')
+            if ("\\th11tr.exe" in result) == True:
+                result = result.replace('\\th11tr.exe', '')
+            if ("\\th12tr.exe" in result) == True:
+                result = result.replace('\\th12tr.exe', '')
+            if ("\\th123tr.exe" in result) == True:
+                result = result.replace('\\th123tr.exe', '')
+            if ("\\th125tr.exe" in result) == True:
+                result = result.replace('\\th125tr.exe', '')
+            if ("\\th128tr.exe" in result) == True:
+                result = result.replace('\\th128tr.exe', '')
+            if ("\\th13tr.exe" in result) == True:
+                result = result.replace('\\th13tr.exe', '')
+            if ("\\th135tr.exe" in result) == True:
+                result = result.replace('\\th135tr.exe', '')
+            if ("\\th14tr.exe" in result) == True:
+                result = result.replace('\\th14tr.exe', '')
+            if ("\\th143tr.exe" in result) == True:
+                result = result.replace('\\th143tr.exe', '')
+            if ("\\th145tr.exe" in result) == True:
+                result = result.replace('\\th145tr.exe', '')
+            if ("\\th15tr.exe" in result) == True:
+                result = result.replace('\\th15tr.exe', '')
+            if ("\\th155tr.exe" in result) == True:
+                result = result.replace('\\th155tr.exe', '')
+            if ("\\th16tr.exe" in result) == True:
+                result = result.replace('\\th16tr.exe', '')
+            if ("\\th165tr.exe" in result) == True:
+                result = result.replace('\\th165tr.exe', '')
+            if ("\\th17tr.exe" in result) == True:
+                result = result.replace('\\th17tr.exe', '')
+            if ("\\th175tr.exe" in result) == True:
+                result = result.replace('\\th175tr.exe', '')
+            if ("\\th18tr.exe" in result) == True:
+                result = result.replace('\\th18tr.exe', '')
+            if ("\\th19tr.exe" in result) == True:
+                result = result.replace('\\th19tr.exe', '')
+            if ("\\th20tr.exe" in result) == True:
+                result = result.replace('\\th20tr.exe','')
             launcher.destroy()
             print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
             subprocess.run(result2,shell=True,cwd=result)
@@ -1124,6 +1287,62 @@ def quick_launch(event):
             result = result.replace('\\th18.exe', '')
         if ("\\th19.exe" in result) == True:
             result = result.replace('\\th19.exe', '')
+        if ("\\th20.exe" in result) == True:
+            result = result.replace('th20.exe','')
+        if ("\\th06tr.exe" in result) == True:
+            result = result.replace('\\th06tr.exe', '')
+        if ("\\th07tr.exe" in result) == True:
+            result = result.replace('\\th07tr.exe', '')
+        if ("\\th075tr.exe" in result) == True:
+            result = result.replace('\\th075tr.exe', '')
+        if ("\\th08tr.exe" in result) == True:
+            result = result.replace('\\th08tr.exe', '')
+        if ("\\th09tr.exe" in result) == True:
+            result = result.replace('\\th09tr.exe', '')
+        if ("\\th095tr.exe" in result) == True:
+            result = result.replace('\\th095tr.exe', '')
+        if ("\\th10tr.exe" in result) == True:
+            result = result.replace('\\th10tr.exe', '')
+        if ("\\th105tr.exe" in result) == True:
+            result = result.replace('\\th105tr.exe', '')
+        if ("\\th11tr.exe" in result) == True:
+            result = result.replace('\\th11tr.exe', '')
+        if ("\\th12tr.exe" in result) == True:
+            result = result.replace('\\th12tr.exe', '')
+        if ("\\th123tr.exe" in result) == True:
+            result = result.replace('\\th123tr.exe', '')
+        if ("\\th125tr.exe" in result) == True:
+            result = result.replace('\\th125tr.exe', '')
+        if ("\\th128tr.exe" in result) == True:
+            result = result.replace('\\th128tr.exe', '')
+        if ("\\th13tr.exe" in result) == True:
+            result = result.replace('\\th13tr.exe', '')
+        if ("\\th135tr.exe" in result) == True:
+            result = result.replace('\\th135tr.exe', '')
+        if ("\\th14tr.exe" in result) == True:
+            result = result.replace('\\th14tr.exe', '')
+        if ("\\th143tr.exe" in result) == True:
+             result = result.replace('\\th143tr.exe', '')
+        if ("\\th145tr.exe" in result) == True:
+            result = result.replace('\\th145tr.exe', '')
+        if ("\\th15tr.exe" in result) == True:
+            result = result.replace('\\th15tr.exe', '')
+        if ("\\th155tr.exe" in result) == True:
+            result = result.replace('\\th155tr.exe', '')
+        if ("\\th16tr.exe" in result) == True:
+            result = result.replace('\\th16tr.exe', '')
+        if ("\\th165tr.exe" in result) == True:
+            result = result.replace('\\th165tr.exe', '')
+        if ("\\th17tr.exe" in result) == True:
+            result = result.replace('\\th17tr.exe', '')
+        if ("\\th175tr.exe" in result) == True:
+            result = result.replace('\\th175tr.exe', '')
+        if ("\\th18tr.exe" in result) == True:
+            result = result.replace('\\th18tr.exe', '')
+        if ("\\th19tr.exe" in result) == True:
+            result = result.replace('\\th19tr.exe', '')
+        if ("\\th20tr.exe" in result) == True:
+            result = result.replace('\\th20tr.exe','')
         launcher.destroy()
         print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
         subprocess.run(result2,shell=True,cwd=result)
