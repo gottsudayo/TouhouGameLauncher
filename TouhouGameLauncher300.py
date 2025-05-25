@@ -19,6 +19,9 @@ import sys
 from time import sleep
 import webbrowser
 import shutil
+from github import Github
+import requests
+import threading
 
 #続いていろいろな関数の定義
 global dire
@@ -34,7 +37,6 @@ global languages
 languages = []
 global app
 app = True
-
 
 def suc():
     app = False
@@ -295,18 +297,18 @@ def set0_w():
     
     set0_window.mainloop()
 
-#language.jsonの読み込み（韓国語を直接プログラムに入れない。）
-path = Path("Appdata\\language.json")
+#language300.jsonの読み込み（韓国語を直接プログラムに入れない。）
+path = Path("Appdata\\language300.json")
 path = path.resolve()
 if os.path.isfile(path):
     try:
         with open(path,"r",encoding="utf-8") as f:
             language_j = json.load(f)
     except TypeError as e:
-        messagebox.showerror("Error",f"I couldn't read ”language.json” file.\nDid you change out the contents of ”language.json” file?\nTypeError : {e}")
+        messagebox.showerror("Error",f"I couldn't read ”language300.json” file.\nDid you change out the contents of ”language300.json” file?\nTypeError : {e}")
         exit_py()
 else:
-    messagebox.showerror("Error","I couldn't find ”language.json” file.\nYou have to install ”language.json” file in ”Appdata” folder.")
+    messagebox.showerror("Error","I couldn't find ”language300.json” file.\nYou have to install ”language300.json” file in ”Appdata” folder.")
     exit_py()
 
 messages = language_j[0]
@@ -316,12 +318,116 @@ games = language_j[1]
 for pack in messages:
     print("Checking language message pack ”" + messages[pack][1] + "”")
     if len(messages[pack][0]) != 62:
-        messagebox.showerror("Error","This is no language.json.\nDid you download older or newer language.json than this version to here?")
+        messagebox.showerror("Error","This is no language300.json.\nDid you download older or newer language300.json than this version to here?")
         exit_py()
 
 for i in list(messages):
     languages.append(i)
     print("言語パック”" + i + "”を認識")
+
+#アップデート確認の関数と通知の関数、あと実行
+#実行
+def start_update():
+    UW = Tk()
+    UW.geometry("500x200")
+    UW.title("TouhouGameLauncher Updater")
+    global Ulabel
+    global Ubar
+    Ulabel = Label(UW,text="Generating url...(1/6)",font=30)
+    Ubar = ttk.Progressbar(UW,length=450,mode="determinate",maximum=6)
+    Ulabel.pack()
+    Ubar.pack()
+    def soft_up():
+        #url生成
+        GLC2 = GLC.replace("ver","")
+        re_url = f"https://api.github.com/repos/gottsudayo/TouhouGameLauncherDownloadEXE/contents/{GLC}"
+        toPath = "Temp"
+        responce = requests.get(re_url)
+        #zipのダウンロード
+        Ulabel["text"] = "Downloading zip...(2/6)"
+        Ubar["value"] = 1
+        Ulabel.update()
+        Ubar.update()
+        for item in responce.json():
+            if item["type"] == "file":
+                global file_path
+                file_url = item["download_url"]
+                file_name = item["name"]
+                file_path = f"{toPath}/{file_name}"
+                file_re = requests.get(file_url)
+                with open(file_path, "wb") as file:
+                    file.write(file_re.content)
+        #Zipの解凍
+        Ulabel["text"] = "Unziping file...(3/6)"
+        Ubar["value"] = 2
+        Ulabel.update()
+        Ubar.update()
+        shutil.unpack_archive(file_path)
+        #ファイル移動
+        Ulabel["text"] = "Moving files...(4/6)"
+        Ubar["value"] = 3
+        Ulabel.update()
+        Ubar.update()
+        pathl = Path("Temp")
+        for name in pathl.glob("./TouhouGameLauncher*.exe"):
+            newEXE = str(name)
+        newEXEname = newEXE.replace("Temp/","")
+        shutil.move(newEXE,newEXEname)
+        pathl = Path("Temp/Appdata")
+        for name in pathl.glob("./language*.json"):
+            newLJ = str(name)
+        newLJname = newLJ.replace("Temp/","")
+        shutil.move(newLJ,newLJname)
+        #data.jsonをolddata.jsonに名前変更
+        Ulabel["text"] = "Setting older data.json...(5/6)"
+        Ubar["value"] = 4
+        Ulabel.update()
+        Ubar.update()
+        pathl = Path("Appdata/data.json")
+        pathll = Path("Appdata/olddata.json")
+        shutil.move(pathl,pathll)
+        #Tempファイルを消去
+        Ulabel["text"] = "Deleting temp files...(6/6)"
+        Ubar["value"] = 5
+        Ulabel.update()
+        Ubar.update()
+        shutil.rmtree("Temp")
+        #終わり
+        Ulabel["text"] = "Update is complete!"
+        Ubar["value"] = 6
+        Ulabel.update()
+        Ubar.update()
+        completeBu = Button(UW,text="close",command=suc)
+        completeBu.pack()
+        UW.update()
+    threadUP = threading.Thread(target=soft_up)
+    threadUP.start()
+    UW.mainloop()
+            
+    
+#通知
+def say_update():
+    su_w = messagebox.askyesno("info",messages[language][0][62])
+    if su_w == True:
+        start_update()
+    else:
+        pass
+#確認
+def check_update():
+    try:
+        global g
+        global repo
+        global GLC
+        GToken = "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"
+        GRepoName = "gottsudayo/TouhouGameLauncher"
+        g = Github(GToken)
+        repo = g.get_repo(GRepoName)
+        GLCK = repo.get_commits()[0]
+        GLC = GLCK.commit.message
+        if GLC != "ver3.0.0":
+            say_update()
+    except:
+        messagebox.showinfo("info",messages[language][0][63])
 
 #検索をするためのとても重要な関数
 def file_load():
