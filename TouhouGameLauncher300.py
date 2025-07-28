@@ -22,17 +22,18 @@ import shutil
 from github import Github
 import requests
 import threading
+from PIL import Image
 
 #続いていろいろな関数の定義
 global dire
 global setting
 global game_name
 dire = []
-setting = [[],""]
+setting = [[],"",[]]
 everyL = {}
+
 def exit_py():
-    app = False
-    sys.exit()
+    pass
 global languages
 languages = []
 global app
@@ -40,102 +41,71 @@ app = True
 
 def suc():
     app = False
-    sys.exit()
+    os.kill()
+
+def addtext(widget,text_to_append):
+    widget.insert("end-1c", text_to_append + "\n")
+    widget.see("end")
+
+def data_json_w():
+    data_json = Path("Appdata\\data.json")
+    data_json = data_json.resolve()
+    with open(data_json,"w",encoding="utf-8") as f:
+        json.dump(data,f)
 
 def setup():
+    def cancel_setup():
+        setup_w.destroy()
+        return
     def set0_w_w():
         set0_w()
         while len(search_dire_k) != 0:
             page3_next['state'] = 'disabled'
         page3_next['state'] = 'normal'
     global setting
+    global search_dire_k
+    global dire
+    search_dire_k = []
     dire = []
-    setting = [[],""]
-    data = [{},[],[[],""],{}]
-    
-    def data_json_w():
-        setting[1] = language
-        data[2] = setting
-        data[3] = everyL
-        data_json = Path("Appdata\\data.json")
-        data_json = data_json.resolve()
-        with open(data_json,"w",encoding="utf-8") as f:
-            json.dump(data,f)
+    setting = [[],"",[]]
+    data = [{},[],[[],"",[]],{}]
     
     global setup_w
     setup_w = Tk()
     setup_w.title("TouhouGameLauncher Setup")
     setup_w.geometry("500x500")
     setup_w.iconbitmap(default="icon.ico")
-    setup_w.protocol("WM_DELETE_WINDOW",suc)
+    setup_w.protocol("WM_DELETE_WINDOW",cancel_setup)
     
     def setup_close():
         setup_w.destroy()
-        global app
-        app = True
-        #direのディレクトリが存在していればスルー、1つでも存在していないものがあれば自動的にリロードするため、dataのdireを初期化。
-        for i in dire:
-            if os.path.exists(i) == False:
-                print(os.path.exists(i))
-                print("ディレクトリ：" + i + "、非存在")
-                print("リストを初期化")
-                dire = []
-                data[1] = dire
-                data[3] = everyL
-                with open("Appdata\\data.json","w") as f:
-                    json.dump(data,f)
-                break
-            else:
-                print(os.path.exists(i))
-                print("ディレクトリ：" + i + "、存在確認")
-        #dataからsettingのlanguageを検出
-        global language
-        if len(data[2]) == 2:
-            if data[2][1] != "":
-                language = data[2][1]
-            else:
-                language = "Japanese"
-                setting[1] = language
-                data[2] = setting
-                data[3] = everyL
-                with open("Appdata\\data.json","w") as f:
-                    json.dump(data,f)
-        else:
-            language = "Japanese"
-            setting[1] = language
-            data[2] = setting
-            data[3] = everyL
-            with open("Appdata\\data.json","w") as f:
-                json.dump(data,f)
-        if len(dire) == 0:
-            file_load()
-            load()
-        else:
-            global Ingames
-            Ingames = []
-            for i in dire:
-                Ingames.append(i)
-            load()
-        
-        launcher_widget()
-    
+        launch()
     
     def next3():
-        page2.destroy()
-        page3 = Canvas(setup_w,width=500,height=500)
-        page3.place(x=0,y=0)
-        message2 = Label(page3,text=messages[language][0][51],font=30)
+        page3.destroy()
+        page4 = Canvas(setup_w,width=500,height=500)
+        page4.place(x=0,y=0)
+        message2 = Label(page4,text=messages[language][0][51],font=30)
         message2.pack()
-        setting[0] = search_dire_k
+        dire = search_dire_k
+        setting[0] = dire
+        setting[1] = language
+
+        data[2] = setting
+        data[3] = everyL
         data_json_w()
         message2['text'] = messages[language][0][52]
         message2.update()
-        setup_close_b = Button(page3,text=messages[language][0][53],font=30,command=setup_close)
+        setup_close_b = Button(page4,text=messages[language][0][53],font=30,command=setup_close)
         setup_close_b.pack(side=BOTTOM)
     
     def next2():
         global page3
         global page3_next
+        setting[0] = dire
+        setting[1] = language
+        data[2] = setting
+        data[3] = everyL
         data_json_w()
         print("言語”" + language + "”を選択")
         print(setting)
@@ -188,7 +158,7 @@ def setup():
                         data[0] = filea
                     else:
                         messagebox.showerror(messages[language][0][8],messages[language][0][59])
-                        exit_py()
+                        suc()
                 global dire
                 dire = data[1]
                 search_dire_k = []
@@ -256,8 +226,6 @@ def set0_w():
     set0_window.title(messages[language][0][28])
     set0_window.iconbitmap("icon.ico")
     
-    global search_dire_k
-    search_dire_k = []
     if len(setting[0]) != 0:
         for i in setting[0]:
             search_dire_k.append(i)
@@ -267,6 +235,7 @@ def set0_w():
     dire_list_var.set(search_dire_k)
     
     def folder_add():
+        global search_dire_k
         folder = filedialog.askdirectory(title=messages[language][0][29],initialdir="PC")
         if folder != "":
             search_dire_k.append(folder)
@@ -284,6 +253,11 @@ def set0_w():
             error = messages[language][0][30] + e
             messagebox.showerror(messages[language][0][8],error)
     def close_set0():
+        setting[0] = dire
+        setting[1] = language
+        data[2] = setting
+        data[3] = everyL
+        data_json_w()
         set0_window.destroy()
     
     set0_add = Button(set0_window,text=messages[language][0][31],font=30,command=folder_add)
@@ -297,119 +271,162 @@ def set0_w():
     
     set0_window.mainloop()
 
-#language300.jsonの読み込み（韓国語を直接プログラムに入れない。）
-path = Path("Appdata\\language300.json")
-path = path.resolve()
-if os.path.isfile(path):
-    try:
-        with open(path,"r",encoding="utf-8") as f:
-            language_j = json.load(f)
-    except TypeError as e:
-        messagebox.showerror("Error",f"I couldn't read ”language300.json” file.\nDid you change out the contents of ”language300.json” file?\nTypeError : {e}")
-        exit_py()
-else:
-    messagebox.showerror("Error","I couldn't find ”language300.json” file.\nYou have to install ”language300.json” file in ”Appdata” folder.")
-    exit_py()
+def set1_w():
+    set1_window = Tk()
+    set1_window.geometry("400x400")
+    set1_window.title(messages[language][0][66])
+    set1_window.iconbitmap("icon.ico")
+    print(setting[2])
+    print(allow_vpatch_list_new)
+    canvas1 = Canvas(set1_window,width=400,height=400)
+    canvas1.pack()
+    if len(setting[2]) != 0:
+        for i in setting[2]:
+            allow_vpatch_list_new.append(i)
+    vpatch_list_var = StringVar(canvas1,value=allow_vpatch_list_new)
+    vpatch_list = Listbox(canvas1,width=100,font=30,listvariable=vpatch_list_var)
+    vpatch_list_var.set(allow_vpatch_list_new)
+    
+    def set1_add():
+        filet = [("Windows Application Format","*.exe")]
+        fileset1 = filedialog.askopenfilename(filetypes=filet,title=messages[language][0][29],initialdir="PC")
+        if fileset1 != "":
+            allow_vpatch_list_new.append(fileset1)
+            vpatch_list_var.set(allow_vpatch_list_new)
+        set1_window.lift()
+        print(setting[2])
+        print(allow_vpatch_list_new)
+    def set1_delete():
+        try:
+            selected_folder = vpatch_list.get(vpatch_list.curselection())
+            allow_vpatch_list_new.remove(selected_folder)
+            vpatch_list_var.set(allow_vpatch_list_new)
+        except IndexError as e:
+            error = messages[language][0][30] + e
+            messagebox.showerror(messages[language][0][8],error)
+        except TypeError as e:
+            error = messages[language][0][30] + e
+            messagebox.showerror(messages[language][0][8],error)
+    def close_set1():
+        global allow_vpatch_list_new
+        print(setting[2])
+        print(allow_vpatch_list_new)
+        canvas2 = Canvas(set1_window,width=400,height=400)
+        canvas1.destroy()
+        canvas2.pack()
+        logtxt = Text(canvas2,width=395,height=395,state='disabled')
+        logtxt.pack()
+        try:
+            for i in setting[2]:
+                if not (i in allow_vpatch_list_new):
+                    addtext(logtxt,("starting process for ”" + i + "” to delete it..."))
 
-messages = language_j[0]
-games = language_j[1]
-
-#messagesの識別
-for pack in messages:
-    print("Checking language message pack ”" + messages[pack][1] + "”")
-    if len(messages[pack][0]) != 62:
-        messagebox.showerror("Error","This is no language300.json.\nDid you download older or newer language300.json than this version to here?")
-        exit_py()
-
-for i in list(messages):
-    languages.append(i)
-    print("言語パック”" + i + "”を認識")
-
-#アップデート確認の関数と通知の関数、あと実行
-#実行
-def start_update():
-    UW = Tk()
-    UW.geometry("500x200")
-    UW.title("TouhouGameLauncher Updater")
-    global Ulabel
-    global Ubar
-    Ulabel = Label(UW,text="Generating url...(1/6)",font=30)
-    Ubar = ttk.Progressbar(UW,length=450,mode="determinate",maximum=6)
-    Ulabel.pack()
-    Ubar.pack()
-    def soft_up():
-        #url生成
-        GLC2 = GLC.replace("ver","")
-        re_url = f"https://api.github.com/repos/gottsudayo/TouhouGameLauncherDownloadEXE/contents/{GLC}"
-        toPath = "Temp"
-        responce = requests.get(re_url)
-        #zipのダウンロード
-        Ulabel["text"] = "Downloading zip...(2/6)"
-        Ubar["value"] = 1
-        Ulabel.update()
-        Ubar.update()
-        for item in responce.json():
-            if item["type"] == "file":
-                global file_path
-                file_url = item["download_url"]
-                file_name = item["name"]
-                file_path = f"{toPath}/{file_name}"
-                file_re = requests.get(file_url)
-                with open(file_path, "wb") as file:
-                    file.write(file_re.content)
-        #Zipの解凍
-        Ulabel["text"] = "Unziping file...(3/6)"
-        Ubar["value"] = 2
-        Ulabel.update()
-        Ubar.update()
-        shutil.unpack_archive(file_path)
-        #ファイル移動
-        Ulabel["text"] = "Moving files...(4/6)"
-        Ubar["value"] = 3
-        Ulabel.update()
-        Ubar.update()
-        pathl = Path("Temp")
-        for name in pathl.glob("./TouhouGameLauncher*.exe"):
-            newEXE = str(name)
-        newEXEname = newEXE.replace("Temp/","")
-        shutil.move(newEXE,newEXEname)
-        pathl = Path("Temp/Appdata")
-        for name in pathl.glob("./language*.json"):
-            newLJ = str(name)
-        newLJname = newLJ.replace("Temp/","")
-        shutil.move(newLJ,newLJname)
-        #data.jsonをolddata.jsonに名前変更
-        Ulabel["text"] = "Setting older data.json...(5/6)"
-        Ubar["value"] = 4
-        Ulabel.update()
-        Ubar.update()
-        pathl = Path("Appdata/data.json")
-        pathll = Path("Appdata/olddata.json")
-        shutil.move(pathl,pathll)
-        #Tempファイルを消去
-        Ulabel["text"] = "Deleting temp files...(6/6)"
-        Ubar["value"] = 5
-        Ulabel.update()
-        Ubar.update()
-        shutil.rmtree("Temp")
-        #終わり
-        Ulabel["text"] = "Update is complete!"
-        Ubar["value"] = 6
-        Ulabel.update()
-        Ubar.update()
-        completeBu = Button(UW,text="close",command=suc)
-        completeBu.pack()
-        UW.update()
-    threadUP = threading.Thread(target=soft_up)
-    threadUP.start()
-    UW.mainloop()
+                    if "東方紅魔郷.exe" in i:
+                        answer = messagebox.askyesno("info",messages[language][0][68])
+                        if answer:
+                            path = i.replace('東方紅魔郷.exe','')
+                            os.remove(Path(str(path + "vpatch.exe")))
+                            os.remove(Path(str(path + "vpatch_th06.dll")))
+                            os.remove(Path(str(path + "vpatch.ini")))
+                    if "th07.exe" in i:
+                        path = i.replace('th07.exe','')
+                        os.remove(Path(str(path + "vpatch.exe")))
+                        os.remove(Path(str(path + "vpatch_th07.dll")))
+                        os.remove(Path(str(path + "vpatch.ini")))
+                    if "th08.exe" in i:
+                        path = i.replace('th08.exe','')
+                        os.remove(Path(str(path + "vpatch.exe")))
+                        os.remove(Path(str(path + "vpatch_th08.dll")))
+                        os.remove(Path(str(path + "vpatch.ini")))
+                    if "th09.exe" in i:
+                        path = i.replace('th09.exe','')
+                        os.remove(Path(str(path + "vpatch.exe")))
+                        os.remove(Path(str(path + "vpatch_th09.dll")))
+                        os.remove(Path(str(path + "vpatch.ini")))
+                    if "th095.exe" in i:
+                        path = i.replace('th095.exe','')
+                        os.remove(Path(str(path + "vpatch.exe")))
+                        os.remove(Path(str(path + "vpatch_th095.dll")))
+                        os.remove(Path(str(path + "vpatch.ini")))
+                    if "th10.exe" in i:
+                        path = i.replace('th10.exe','')
+                        os.remove(Path(str(path + "vpatch.exe")))
+                        os.remove(Path(str(path + "vpatch_th10.dll")))
+                        os.remove(Path(str(path + "vpatch.ini")))
+                    if "th11.exe" in i:
+                        path = i.replace('th11.exe','')
+                        os.remove(Path(str(path + "vpatch.exe")))
+                        os.remove(Path(str(path + "vpatch_th11.dll")))
+                        os.remove(Path(str(path + "vpatch.ini")))
+            for i in allow_vpatch_list_new:
+                if not (i in setting[2]):
+                    a = "finding patch files for ”" + i + "”"
+                    addtext(logtxt,a)
+                    print(a)
+                    global vppath
+                    global pathgame
+                    if "東方紅魔郷.exe" in i:
+                        vppath = i.replace('東方紅魔郷.exe','')
+                        pathgame = "vpatch_th06.dll"
+                    if "th07.exe" in i:
+                        vppath = i.replace('th07.exe','')
+                        pathgame = "vpatch_th07.dll"
+                    if "th08.exe" in i:
+                        vppath = i.replace('th08.exe','')
+                        pathgame = "vpatch_th08.dll"
+                    if "th09.exe" in i:
+                        vppath = i.replace('th09.exe','')
+                        pathgame = "vpatch_th09.dll"
+                    if "th095.exe" in i:
+                        vppath = i.replace('th095.exe','')
+                        pathgame = "vpatch_th095.dll"
+                    if "th10.exe" in i:
+                        vppath = i.replace('th10.exe','')
+                        pathgame = "vpatch_th10.dll"
+                    if "th11.exe" in i:
+                        vppath = i.replace('th11.exe','')
+                        pathgame = "vpatch_th11.dll"
+                    vpatchexe = 'Appdata\\VsyncPatch\\vpatch.exe'
+                    vpatch_pathgame = 'Appdata\\VsyncPatch\\' + pathgame
+                    vpatchini = 'Appdata\\VsyncPatch\\vpatch.ini'
+                    addtext(logtxt,"copying files...")
+                    print("copying files...")
+                    shutil.copy(vpatchexe,vppath)
+                    shutil.copy(vpatch_pathgame,vppath)
+                    shutil.copy(vpatchini,vppath)
+                    addtext(logtxt,"complete to copy files")
+                    print("conplete to copy files")
+        except PermissionError:
+            messagebox.showerror('error',messages[language][0][69])
+            allow_vpatch_list_new = []
+        
+        dire = search_dire_k
+        setting[0] = dire
+        setting[1] = language
+        setting[2] = allow_vpatch_list_new
+        data[2] = setting
+        data[3] = everyL
+        data_json_w()
+        
+        set1_window.destroy()
             
+    
+    set1_add_o = Button(canvas1,text=messages[language][0][31],font=30,command=set1_add)
+    set1_delete_o = Button(canvas1,text=messages[language][0][32],font=30,command=set1_delete)
+    set1_close = Button(canvas1,text=messages[language][0][33],font=30,command=close_set1)
+    
+    vpatch_list.pack()
+    set1_add_o.pack(side=LEFT)
+    set1_delete_o.pack(side=LEFT)
+    set1_close.pack(side=RIGHT)
+    
+    set1_window.mainloop()
     
 #通知
 def say_update():
     su_w = messagebox.askyesno("info",messages[language][0][62])
     if su_w == True:
-        start_update()
+        webbrowser.open("https://github.com/gottsudayo/TouhouGameLauncherDownloadEXE")
     else:
         pass
 #確認
@@ -437,7 +454,6 @@ def file_load():
     global data
     
     #data.jsonの読み込み
-    data = []
     p = Path('Appdata\\data.json')
     if os.path.isfile(p.resolve()):
         try:
@@ -448,6 +464,7 @@ def file_load():
             file_names = data[0]
             dire = data[1]
             setting = data[2]
+            
             language = setting[1]
             everyL = data[3]
         except TypeError as e:
@@ -480,8 +497,11 @@ def file_load():
     for j in setting[0]:
         folder = Path(j)
         print("ディレクトリ「" + str(folder) + "」を探索中")
+        for i in folder.glob("**/東方紅魔郷.exe"):
+            Ingames.append(str(i))
         for i in folder.glob("**/th[0-9][0-9].exe"):
             Ingames.append(str(i))
+    kensaku.destroy()
         
 
 def load():
@@ -508,8 +528,8 @@ def load():
     #custom.exe起動用にリストを作っておく
     #新しいゲームが出たらここを変更する
     for i in Ingames:
-        if "th06.exe" in i:
-            Incustom.append(i.replace("th06.exe", "custom.exe"))
+        if "東方紅魔郷.exe" in i:
+            Incustom.append(i.replace("東方紅魔郷.exe", "custom.exe"))
         if "th07.exe" in i:
             Incustom.append(i.replace("th07.exe", "custom.exe"))
         if "th075.exe" in i:
@@ -561,9 +581,7 @@ def load():
         if "th19.exe" in i:
             Incustom.append(i.replace("th19.exe", "custom.exe"))
         if "th20.exe" in i:
-              Incustom.append(i.replace("th20.exe","custom.exe"))
-        if "th06tr.exe" in i:
-              Incustom.append(i.replace("th06tr.exe", "custom.exe"))
+            Incustom.append(i.replace("th20.exe","custom.exe"))
         if "th07tr.exe" in i:
             Incustom.append(i.replace("th07tr.exe", "custom.exe"))
         if "th075tr.exe" in i:
@@ -650,13 +668,16 @@ def load():
         for ig in range(len(Ingames)):
             if launch_list[ll] in Ingames[ig]:
                 result_search_index_games[ll].append(Ingames[ig])
-                
+    print("result_search_index_games:")
+    print(result_search_index_games)
     #選択されたcustom.exeの候補を出す
     for ll in range(len(launch_list)):
         result_search_index_custom.append([])
         for ig in range(len(Ingames)):
             if launch_list[ll] in Ingames[ig]:
                 result_search_index_custom[ll].append(Incustom[ig])
+    print("result_search_index_custom:")
+    print(result_search_index_custom)
     
     #direに要素を追加
     dire = []
@@ -672,7 +693,7 @@ def reload():
     launcher.destroy()
     #data.jsonの読み込み
     global data
-    data = []
+    data = [{},[],[[],"",[]],{}]
     p = Path('Appdata\\data.json')
     if os.path.isfile(p.resolve()):
         try:
@@ -696,48 +717,14 @@ def reload():
     
     #ディレクトリ検索
     file_load()
-    #インデックス作成
+    #オブジェクト生成
     load()
     #オブジェクト配置
     kensaku.destroy()
     launcher_widget()
 
-#data.jsonの読み込み
-data = []
-p = Path('Appdata\\data.json')
-
-if os.path.isfile(p.resolve()):
-    try:
-        with open('Appdata\\data.json',mode="r",encoding="utf-8") as f:
-            data = json.load(f)
-        global file_names
-        file_names = data[0]
-        dire = data[1]
-        setting = data[2]
-        everyL = data[3]
-    except TypeError as e:
-        file_names = {}
-        dire = []
-        setting = []
-        everyL = {}
-        if app == True:
-            print("data.jsonの読み込みに失敗3")
-            setup()
-else:
-    file_names = {}
-    dire = []
-    setting = []
-    everyL = {}
-    if app == True:
-        print("data.jsonがない2")
-        setup()
-
-#新しいゲームが出たらここを変更する
-game_name = ["th06.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe","th10.exe","th105.exe","th11.exe","th12.exe","th123.exe","th125.exe","th128.exe","th13.exe","th135.exe","th14.exe","th143.exe","th145.exe","th15.exe","th155.exe","th16.exe","th165.exe","th17.exe","th18.exe","th185.exe","th19.exe","th20.exe"]
-game_name_tr = ["th06tr.exe","th07tr.exe","th075tr.exe","th08tr.exe","th09tr.exe","th095tr.exe","th10tr.exe","th105tr.exe","th11tr.exe","th12tr.exe","th123tr.exe","th125tr.exe","th128tr.exe","th13tr.exe","th135tr.exe","th14tr.exe","th143tr.exe","th145tr.exe","th15tr.exe","th155tr.exe","th16tr.exe","th165tr.exe","th17tr.exe","th18tr.exe","th185tr.exe","th19tr.exe","th20tr.exe"]
-
 def data_json_update(message):
-    data = [{},[],[]]
+    data = [{},[],[[],"",[]],{}]
     data[0] = file_names
     data[1] = dire
     data[2] = setting
@@ -749,64 +736,6 @@ def data_json_update(message):
     elif message != None:
         messagebox.showinfo(messages[language][0][6],message)
     reload()
-
-#direのディレクトリが存在していればスルー、1つでも存在していないものがあれば自動的にリロードするため、dataのdireを初期化。
-for i in dire:
-    if os.path.exists(i) == False:
-        print(os.path.exists(i))
-        print("ディレクトリ：" + i + "、非存在")
-        print("リストを初期化")
-        dire = []
-        data[1] = dire
-        data[3] = everyL
-        with open("Appdata\\data.json","w") as f:
-            json.dump(data,f)
-        break
-    else:
-        print(os.path.exists(i))
-        print("ディレクトリ：" + i + "、存在確認")
-        
-
-#dataからsettingのlanguageを検出
-global language
-if len(data[2]) == 2:
-    if data[2][1] != "":
-        language = data[2][1]
-    else:
-        language = "Japanese"
-        setting[1] = language
-        data[2] = setting
-        data[3] = everyL
-        with open("Appdata\\data.json","w") as f:
-            json.dump(data,f)
-else:
-    language = "Japanese"
-    setting[1] = language
-    data[2] = setting
-    data[3] = everyL
-    with open("Appdata\\data.json","w") as f:
-        json.dump(data,f)
-
-#ここで読み込み関数実行
-try:
-    if len(dire) == 0:
-        file_load()
-        load()
-    else:
-        global Ingames
-        Ingames = []
-        for i in dire:
-            Ingames.append(i)
-        load()
-except UnboundLocalError or TclError or NameError:
-    exit_py()
-except TypeError as e:
-    print("TypeError : " + str(e))
-    if os.path.isfile("Appdata\\data.json"):
-        os.remove("Appdata\\data.json")
-    if app == True:
-        setup()
-
 
 def selected_index():
     selected_game2 = gamelist.curselection()
@@ -864,8 +793,8 @@ def launch_game():
                     result = result_search_index_games[selected_game][open_games]
                     result2 = result
                     #新しいゲームが出たらここを変更する
-                    if ("\\th06.exe" in result) == True:
-                        result = result.replace('\\th06.exe', '')
+                    if ("\\東方紅魔郷.exe" in result) == True:
+                        result = result.replace('\\東方紅魔郷.exe', '')
                     if ("\\th07.exe" in result) == True:
                         result = result.replace('\\th07.exe', '')
                     if ("\\th075.exe" in result) == True:
@@ -918,8 +847,6 @@ def launch_game():
                         result = result.replace('\\th19.exe', '')
                     if ("\\th20.exe" in result) == True:
                         result = result.replace('th20.exe','')
-                    if ("\\th06tr.exe" in result) == True:
-                        result = result.replace('\\th06tr.exe', '')
                     if ("\\th07tr.exe" in result) == True:
                         result = result.replace('\\th07tr.exe', '')
                     if ("\\th075tr.exe" in result) == True:
@@ -972,6 +899,8 @@ def launch_game():
                         result = result.replace('\\th19tr.exe', '')
                     if ("\\th20tr.exe" in result) == True:
                         result = result.replace('\\th20tr.exe','')
+                    if result2.replace('\\','/') in setting[2]:
+                        result2 = result + "\\vpatch.exe"
                     launcher.destroy()
                     launch_game2.destroy()
                     print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
@@ -1045,11 +974,11 @@ def launch_game():
             for i in range(len(result_search_index_games[selected_game])):
                 print(everyL)
                 global a
-                if "tr.exe" in result_search_index_games[selected_game][i]:
+                if result_search_index_games[selected_game][i] in setting[2]:
                     if result_search_index_games[selected_game][i] in file_names:
-                        a = "[v0]" + file_names[result_search_index_games[selected_game][i]]
+                        a = "[vp]" + file_names[result_search_index_games[selected_game][i]]
                     else:
-                        a = "[v0]" + result_search_index_games[selected_game][i]
+                        a = "[vp]" + result_search_index_games[selected_game][i]
                 if (item_game_list[selected_game],result_search_index_games[selected_game][i]) in everyL.items():
                     a = "[Q]" + a
                 open_list_h.append(a)
@@ -1071,8 +1000,8 @@ def launch_game():
             result = result_search_index_games[selected_game][0]
             result2 = result
             #新しいゲームが出たらここを変更する
-            if ("\\th06.exe" in result) == True:
-                result = result.replace('\\th06.exe', '')
+            if ("\\東方紅魔郷.exe" in result) == True:
+                result = result.replace('\\東方紅魔郷.exe', '')
             if ("\\th07.exe" in result) == True:
                 result = result.replace('\\th07.exe', '')
             if ("\\th075.exe" in result) == True:
@@ -1125,8 +1054,6 @@ def launch_game():
                 result = result.replace('\\th19.exe', '')
             if ("\\th20.exe" in result) == True:
                 result = result.replace('th20.exe','')
-            if ("\\th06tr.exe" in result) == True:
-                result = result.replace('\\th06tr.exe', '')
             if ("\\th07tr.exe" in result) == True:
                 result = result.replace('\\th07tr.exe', '')
             if ("\\th075tr.exe" in result) == True:
@@ -1179,6 +1106,8 @@ def launch_game():
                 result = result.replace('\\th19tr.exe', '')
             if ("\\th20tr.exe" in result) == True:
                 result = result.replace('\\th20tr.exe','')
+            if result2.replace('\\','/') in setting[2]:
+                result2 = result + "\\vpatch.exe"
             launcher.destroy()
             print("アプリを開く：「" + result2 + "」、「" + result + "」の上で")
             subprocess.run(result2,shell=True,cwd=result)
@@ -1246,7 +1175,7 @@ def launch_custom():
             launch_custom2_cancel.pack(side=RIGHT)
             launch_custom2.mainloop()
         elif len(result_search_index_custom[selected_game]) == 1:
-            result = result_search_index_custom[0][0]
+            result = result_search_index_custom[selected_game][0]
             result2 = result
             result = result.replace("\\custom.exe","")
             if os.path.isfile(result2):
@@ -1262,8 +1191,7 @@ def launch_custom():
             messagebox.showerror(messages[language][0][8],error)
     except TypeError as e:
         error = messages[language][0][9] + e
-        messagebox.showerror(messages[language][0][8],error)
-        
+        messagebox.showerror(messages[language][0][8],error)        
 
 def settings():
     setting_window = Tk()
@@ -1274,8 +1202,13 @@ def settings():
     def save_setting():
         setting[0] = search_dire_k
         setting_window.destroy()
-        data_json_update(messages[language][0][34])
-    
+        setting[0] = dire
+        setting[1] = language
+        data[2] = setting
+        data[3] = everyL
+        data_json_w()
+        messagebox.showinfo('info',messages[language][0][34])
+
     def cancel_setting():
         setting_window.destroy()
     
@@ -1283,12 +1216,23 @@ def settings():
         set0_w()
         setting_window.lift()
     
+    def set1_w2():
+        set1_w()
+        setting_window.lift()
+    
+    global search_dire_k
+    search_dire_k = []
+    global allow_vpatch_list_new
+    allow_vpatch_list_new = []
+    
     set0_button = Button(setting_window,text=messages[language][0][35],font=30,command=set0_w2)
+    set1_button = Button(setting_window,text=messages[language][0][66],font=30,command=set1_w2)
     setting_save = Button(setting_window,text=messages[language][0][36],font=30,command=save_setting)
     setting_cancel = Button(setting_window,text=messages[language][0][18],font=30,command=cancel_setting)
     
-    set0_button.pack(side=LEFT)
-    setting_cancel.pack(side=RIGHT,anchor=S)
+    set0_button.pack(side=LEFT,anchor=N)
+    set1_button.pack(side=LEFT,anchor=N)
+    setting_cancel.pack(side=BOTTOM,anchor=S)
     setting_save.pack(side=RIGHT,anchor=S)
     
     setting_window.mainloop()
@@ -1297,10 +1241,10 @@ def app_info():
     info_window = Tk()
     info_window.geometry("500x300")
     info_window.iconbitmap("icon.ico")
-    info_window.title("TouhouGameLauncher ver2.3.0")
+    info_window.title("TouhouGameLauncher ver3.0.0")
     
     info_title = Label(info_window,text="Touhou Game Launcher",font=50)
-    info_version = Label(info_window,text="ver2.3.0\nProgramed by Gottsudayo\n2025-2025",font=20)
+    info_version = Label(info_window,text="ver3.0.0\nProgramed by Gottsudayo\n2025-2025",font=20)
     
     def close_info():
         info_window.destroy()
@@ -1341,8 +1285,8 @@ def quick_launch(event):
         result = everyL[item_game_list[selected_game]]
         result2 = result
         #新しいゲームが出たらここを変更する
-        if ("\\th06.exe" in result) == True:
-            result = result.replace('\\th06.exe', '')
+        if ("\\東方紅魔郷.exe" in result) == True:
+            result = result.replace('\\東方紅魔郷.exe', '')
         if ("\\th07.exe" in result) == True:
             result = result.replace('\\th07.exe', '')
         if ("\\th075.exe" in result) == True:
@@ -1395,8 +1339,6 @@ def quick_launch(event):
             result = result.replace('\\th19.exe', '')
         if ("\\th20.exe" in result) == True:
             result = result.replace('th20.exe','')
-        if ("\\th06tr.exe" in result) == True:
-            result = result.replace('\\th06tr.exe', '')
         if ("\\th07tr.exe" in result) == True:
             result = result.replace('\\th07tr.exe', '')
         if ("\\th075tr.exe" in result) == True:
@@ -1478,7 +1420,7 @@ def launcher_widget():
     menu_file = Menu(menubar,tearoff=0)
     menu_file.add_command(label=messages[language][0][27],command=settings)
     menu_file.add_separator()
-    menu_file.add_command(label=messages[language][0][41],command=exit_py)
+    menu_file.add_command(label=messages[language][0][41],command=suc)
     menubar.add_cascade(label=messages[language][0][47],menu=menu_file)
     
     language_ob = []
@@ -1511,6 +1453,129 @@ def launcher_widget():
     
     launcher.mainloop()
 
-app = True
+def launch():
+    global dire
+    global game_name
+    global game_name_tr
+    #新しいゲームが出たらここを変更する
+    game_name = ["東方紅魔郷.exe","th07.exe","th075.exe","th08.exe","th09.exe","th095.exe","th10.exe","th105.exe","th11.exe","th12.exe","th123.exe","th125.exe","th128.exe","th13.exe","th135.exe","th14.exe","th143.exe","th145.exe","th15.exe","th155.exe","th16.exe","th165.exe","th17.exe","th18.exe","th185.exe","th19.exe","th20.exe"]
+    game_name_tr = ["東方紅魔郷.exe","th07tr.exe","th075tr.exe","th08tr.exe","th09tr.exe","th095tr.exe","th10tr.exe","th105tr.exe","th11tr.exe","th12tr.exe","th123tr.exe","th125tr.exe","th128tr.exe","th13tr.exe","th135tr.exe","th14tr.exe","th143tr.exe","th145tr.exe","th15tr.exe","th155tr.exe","th16tr.exe","th165tr.exe","th17tr.exe","th18tr.exe","th185tr.exe","th19tr.exe","th20tr.exe"]
 
-launcher_widget()
+    #direのディレクトリが存在していればスルー、1つでも存在していないものがあれば自動的にリロードするため、dataのdireを初期化。
+    for i in dire:
+        if os.path.exists(i) == False:
+            print(os.path.exists(i))
+            print("ディレクトリ：" + i + "、非存在")
+            print("リストを初期化")
+            dire = []
+            data[1] = dire
+            data[3] = everyL
+            with open("Appdata\\data.json","w") as f:
+                json.dump(data,f)
+            break
+        else:
+            print(os.path.exists(i))
+            print("ディレクトリ：" + i + "、存在確認")
+
+
+    #dataからsettingのlanguageを検出
+    global language
+    if len(data[2]) == 2:
+        if data[2][1] != "":
+            language = data[2][1]
+        else:
+            language = "Japanese"
+            setting[1] = language
+            data[2] = setting
+            data[3] = everyL
+            with open("Appdata\\data.json","w") as f:
+                json.dump(data,f)
+    else:
+        language = "Japanese"
+        setting[1] = language
+        data[2] = setting
+        data[3] = everyL
+        with open("Appdata\\data.json","w") as f:
+            json.dump(data,f)
+
+    #ここで読み込み関数実行
+    try:
+        if len(dire) == 0:
+            file_load()
+            load()
+        else:
+            global Ingames
+            Ingames = []
+            for i in dire:
+                Ingames.append(i)
+            load()
+    except UnboundLocalError or TclError or NameError:
+        suc()
+    except TypeError as e:
+        print("TypeError : " + str(e))
+        if os.path.isfile("Appdata\\data.json"):
+            os.remove("Appdata\\data.json")
+        if app == True:
+            setup()
+    
+    app = True
+    launcher_widget()
+
+#language300.jsonの読み込み（韓国語を直接プログラムに入れない。）
+path = Path("Appdata\\language300.json")
+path = path.resolve()
+if os.path.isfile(path):
+    try:
+        with open(path,"r",encoding="utf-8") as f:
+            language_j = json.load(f)
+    except TypeError as e:
+        messagebox.showerror("Error",f"I couldn't read ”language300.json” file.\nDid you change out the contents of ”language300.json” file?\nTypeError : {e}")
+        suc()
+else:
+    messagebox.showerror("Error","I couldn't find ”language300.json” file.\nYou have to install ”language300.json” file in ”Appdata” folder.")
+    suc()
+messages = language_j[0]
+games = language_j[1]
+#messagesの識別
+for pack in messages:
+    print("Checking language message pack ”" + messages[pack][1] + "”")
+    if len(messages[pack][0]) != 70:
+        messagebox.showerror("Error","This is no language300.json.\nDid you download older or newer language300.json than this version to here?")
+        suc()
+for i in list(messages):
+    languages.append(i)
+    print("言語パック”" + i + "”を認識")
+
+#data.jsonの読み込み
+data = [{},[],[[],"",[]],{}]
+p = Path('Appdata\\data.json')
+if os.path.isfile(p.resolve()):
+    try:
+        with open('Appdata\\data.json',mode="r",encoding="utf-8") as f:
+            data = json.load(f)
+        global file_names
+        
+        file_names = data[0]
+        dire = data[1]
+        setting = data[2]
+        everyL = data[3]
+    except TypeError as e:
+        file_names = {}
+        dire = []
+        setting = []
+        everyL = {}
+        allow_vpatch_list_new = []
+        if app == True:
+            print("data.jsonの読み込みに失敗3")
+            setup()
+else:
+    file_names = {}
+    dire = []
+    setting = []
+    everyL = {}
+    allow_vpatch_list_new = []
+    if app == True:
+        print("data.jsonがない2")
+        setup()
+
+launch()

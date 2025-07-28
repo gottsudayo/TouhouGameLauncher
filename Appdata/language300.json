@@ -28,7 +28,7 @@
     "指定したcustom.exeが以下ディレクトリから見つかりませんでした。\n",
     "設定",
     "参照ディレクトリ設定",
-    "検索するフォルダを選択",
+    "フォルダを選択",
     "ディレクトリが選択されておりません。\nIndexError : ",
     "追加",
     "削除",
@@ -62,7 +62,13 @@
     "古いファイルを参照",
     "そのdata.jsonは最新バージョンまたはそれ以降もしくはdata.jsonではありません。",
     "新しいアップデートが利用可能です！\n今すぐ更新しますか？",
-    "アップデートの取得に失敗しました。"
+    "アップデートの取得に失敗しました。",
+    "アップデートを取得",
+    "アプリを終了",
+    "vpatch適用設定",
+    "紅魔郷～地霊殿のみ対応しております。",
+    "紅魔郷のvpatch削除は非推奨です。\nそれでも削除しますか？",
+    "Vpatchインストール中にエラーが発生しました。\nこのソフトを管理者として実行するか、インストール先の書き込み禁止属性を外してください。"
     ],"日本語"],
             "English":[[
                 "Searching Directory...",
@@ -128,7 +134,13 @@
                 "open old version file",
                 "This data.json is same version or newer file or isn't data.json.",
                 "You can use a new version Touhou Game Launcher.\nShall I update to a new version?",
-                "I couldn't find a new version."
+                "I couldn't find a new version.",
+                "Check new version",
+                "Quit",
+                "Setting how to apply VsyncPatch",
+                "This applies from koumakyo to chireiden.",
+                "It is not recommended to delete VsyncPatch in koumakyo. \n Are you sure you want to delete it?",
+                "An error occurred while installing ”Vpatch”.\nYou must run this app as an administrator or remove the write-protect attribute from the install location."
             ],"English"],
         "Korean":
     [[
@@ -195,7 +207,13 @@
         "이전 버전 파일 열기",
         "이 data.json은 동일한 버전이거나 더 최신 파일이거나 data.json이 아닙니다.",
         "새로운 버전의 Touhou Game Launcher를 사용할 수 있습니다.\n새 버전으로 업데이트하시겠습니까?",
-        "새로운 버전을 찾을 수 없습니다."
+        "새로운 버전을 찾을 수 없습니다.",
+        "새 버전 확인",
+        "그만두다",
+        "VsyncPatch 적용 방법 설정",
+        "이는 코우마쿄부터 치레이덴까지 적용됩니다.",
+        "코우마툐에서는 VsyncPatch를 삭제하지 않는 것이 좋습니다. \n 삭제하시겠습니까?",
+        "”Vpatch”를 설치하는 중 오류가 발생했습니다.\n이 앱을 관리자 권한으로 실행하거나 설치 위치에서 쓰기 방지 속성을 제거해야 합니다."
     ],"한국어"]},
     {"Japanese":
     {"東方紅魔郷.exe":["東方紅魔郷　とうほうこうまきょう","2002"],
